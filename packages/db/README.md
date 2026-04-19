@@ -1,15 +1,3 @@
 # db
 
-To install dependencies:
-
-```bash
-bun install
-```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.3.12. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+Package for database access using Drizzle ORM with PostgreSQL. This package defines the database schema and provides a connection to the database. It is used by other packages to perform database operations.
