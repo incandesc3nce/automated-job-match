@@ -1,0 +1,8 @@
+{
+  "name": "career-ai-v2",
+  "private": true,
+  "workspaces": [
+    "apps/api"
+  ],
+  "scripts": {}
+}
