@@ -1,9 +1,8 @@
 import { hash, verify } from 'argon2';
 import jwt from 'jsonwebtoken';
-import type { UUID } from 'node:crypto';
 
 export type JwtPayload = {
-  userId: UUID;
+  userId: string;
 };
 
 const HASH_SECRET = process.env['HASH_SECRET']!;
