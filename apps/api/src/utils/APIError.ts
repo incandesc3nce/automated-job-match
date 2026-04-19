@@ -3,12 +3,19 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
 export class APIError extends HTTPException {
   constructor(status: ContentfulStatusCode, message: string) {
+    const payload = {
+      statusCode: status,
+      statusText: APIError.statusText(status),
+      success: false,
+      error: message,
+    };
+
     super(status, {
-      message: JSON.stringify({
-        statusCode: status,
-        statusText: APIError.statusText(status),
-        success: false,
-        error: message,
+      res: new Response(JSON.stringify(payload), {
+        status: status,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }),
     });
   }
