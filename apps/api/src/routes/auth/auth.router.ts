@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { db, users, eq } from '@career-ai/db';
-import { hashPassword, signJwt } from '@career-ai/auth';
+import { hashPassword, signJwt, verifyPassword } from '@career-ai/auth';
 import { BadRequestError, InternalServerError } from '@/utils/APIError';
 import { signUpValidator, loginValidator } from './auth.validator';
 
@@ -43,11 +43,12 @@ authRouter.post('/login', loginValidator, async (c) => {
   const { email, password } = await c.req.json();
 
   const [user] = await db.select().from(users).where(eq(users.email, email));
-  const hashedPassword = await hashPassword(password);
   if (!user) {
     throw new BadRequestError('Invalid email or password');
   }
-  if (user.password_hash !== hashedPassword) {
+
+  const isValidPassword = await verifyPassword(password, user.password_hash);
+  if (!isValidPassword) {
     throw new BadRequestError('Invalid email or password');
   }
 
