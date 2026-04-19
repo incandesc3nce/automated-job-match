@@ -1,8 +1,10 @@
 {
   "name": "career-ai-v2",
   "private": true,
+  "scripts": {},
   "workspaces": [
-    "apps/api"
-  ],
-  "scripts": {}
+    "apps/api",
+    "packages/db",
+    "packages/auth"
+  ]
 }
