@@ -1,19 +1,20 @@
 import * as z from 'zod';
 import { zValidator } from '@/lib/validator';
+import { passwordSchema } from '@/lib/schemas/password';
 
-export const signUpValidator = zValidator('json', z.object({
+const signUpSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.email({ error: 'Invalid email address' }),
-  password: z
-    .string()
-    .min(12, 'Password must be at least 12 characters long')
-    .max(100, 'Password must be less than 100 characters long')
-    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one number')
-}));
+  password: passwordSchema,
+});
 
-export const loginValidator = zValidator('json', z.object({
+const loginSchema = z.object({
   email: z.email({ error: 'Invalid email address' }),
-  password: z.string().min(1, 'Password is required')
-}));
+  password: z.string().min(1, 'Password is required'),
+});
+
+export const signUpValidator = zValidator('json', signUpSchema);
+export const loginValidator = zValidator('json', loginSchema);
+
+export type SignUpBody = z.infer<typeof signUpSchema>;
+export type LoginBody = z.infer<typeof loginSchema>;

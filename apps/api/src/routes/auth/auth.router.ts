@@ -2,13 +2,18 @@ import { Hono } from 'hono';
 import { db, users, eq } from '@career-ai/db';
 import { hashPassword, signJwt, verifyPassword } from '@career-ai/auth';
 import { BadRequestError, InternalServerError } from '@/utils/APIError';
-import { signUpValidator, loginValidator } from './auth.validator';
+import {
+  signUpValidator,
+  loginValidator,
+  type SignUpBody,
+  type LoginBody,
+} from './auth.validator';
 import { setCookie } from 'hono/cookie';
 
 const authRouter = new Hono();
 
 authRouter.post('/sign-up', signUpValidator, async (c) => {
-  const { name, email, password } = await c.req.json();
+  const { name, email, password }: SignUpBody = await c.req.json();
 
   // Check if user already exists
   const [existingUser] = await db.select().from(users).where(eq(users.email, email));
@@ -38,17 +43,20 @@ authRouter.post('/sign-up', signUpValidator, async (c) => {
     secure: true,
     maxAge: 60 * 60 * 24 * 3,
     sameSite: 'Lax',
-    path: '/'
+    path: '/',
   });
 
-  return c.json({
-    name: newUser.name,
-    email: newUser.email,
-  }, 201);
+  return c.json(
+    {
+      name: newUser.name,
+      email: newUser.email,
+    },
+    201,
+  );
 });
 
 authRouter.post('/login', loginValidator, async (c) => {
-  const { email, password } = await c.req.json();
+  const { email, password }: LoginBody = await c.req.json();
 
   const [user] = await db.select().from(users).where(eq(users.email, email));
   if (!user) {
@@ -67,7 +75,7 @@ authRouter.post('/login', loginValidator, async (c) => {
     secure: true,
     maxAge: 60 * 60 * 24 * 3,
     sameSite: 'Lax',
-    path: '/'
+    path: '/',
   });
 
   return c.json({
