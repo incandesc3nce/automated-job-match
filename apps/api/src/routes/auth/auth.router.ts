@@ -44,7 +44,7 @@ authRouter.post('/sign-up', signUpValidator, async (c) => {
   return c.json({
     name: newUser.name,
     email: newUser.email,
-  });
+  }, 201);
 });
 
 authRouter.post('/login', loginValidator, async (c) => {
