@@ -3,6 +3,7 @@ import { db, users, eq } from '@career-ai/db';
 import { hashPassword, signJwt, verifyPassword } from '@career-ai/auth';
 import { BadRequestError, InternalServerError } from '@/utils/APIError';
 import { signUpValidator, loginValidator } from './auth.validator';
+import { setCookie } from 'hono/cookie';
 
 const authRouter = new Hono();
 
@@ -32,10 +33,17 @@ authRouter.post('/sign-up', signUpValidator, async (c) => {
 
   const token = signJwt({ userId: newUser.id });
 
+  setCookie(c, 'token', token, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 60 * 60 * 24 * 3,
+    sameSite: 'Lax',
+    path: '/'
+  });
+
   return c.json({
     name: newUser.name,
     email: newUser.email,
-    token,
   });
 });
 
@@ -54,10 +62,17 @@ authRouter.post('/login', loginValidator, async (c) => {
 
   const token = signJwt({ userId: user.id });
 
+  setCookie(c, 'token', token, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 60 * 60 * 24 * 3,
+    sameSite: 'Lax',
+    path: '/'
+  });
+
   return c.json({
     name: user.name,
     email: user.email,
-    token,
   });
 });
 
