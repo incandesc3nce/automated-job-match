@@ -1,8 +1,11 @@
 import { HTTPException } from 'hono/http-exception';
+import { flattenError } from 'zod';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 
+type ValidationErrorMessage = ReturnType<typeof flattenError>;
+
 export class APIError extends HTTPException {
-  constructor(status: ContentfulStatusCode, message: string) {
+  constructor(status: ContentfulStatusCode, message: string | ValidationErrorMessage) {
     const payload = {
       statusCode: status,
       statusText: APIError.statusText(status),
@@ -11,16 +14,18 @@ export class APIError extends HTTPException {
     };
 
     super(status, {
+      message: JSON.stringify(message),
       res: new Response(JSON.stringify(payload), {
         status: status,
         headers: {
           'Content-Type': 'application/json',
         },
       }),
+      cause: message,
     });
   }
 
-  private static statusText(status: ContentfulStatusCode) {
+  static statusText(status: ContentfulStatusCode) {
     switch (status) {
       case 400:
         return 'Bad Request';
@@ -28,6 +33,8 @@ export class APIError extends HTTPException {
         return 'Unauthorized';
       case 404:
         return 'Not Found';
+      case 422:
+        return 'Validation Error';
       case 500:
         return 'Internal Server Error';
       default:
@@ -51,6 +58,12 @@ export class UnauthorizedError extends APIError {
 export class NotFoundError extends APIError {
   constructor(message: string) {
     super(404, message);
+  }
+}
+
+export class ValidationError extends APIError {
+  constructor(message: ValidationErrorMessage) {
+    super(422, message);
   }
 }
 
