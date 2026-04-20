@@ -11,7 +11,6 @@ const updateUserSchema = z
   })
   .refine(
     (data) => {
-      console.log(data.newPassword, data.oldPassword);
       if (data.newPassword && !data.oldPassword) {
         return false;
       }
