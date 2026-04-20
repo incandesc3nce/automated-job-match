@@ -3,13 +3,13 @@ import { verifyJwt } from '@career-ai/auth';
 import { createMiddleware } from 'hono/factory';
 import { getCookie } from 'hono/cookie';
 
-declare module 'hono' {
-  interface ContextVariableMap {
+type AuthEnv = {
+  Variables: {
     userId: string;
-  }
-}
+  };
+};
 
-export const auth = createMiddleware(async (c, next) => {
+export const auth = createMiddleware<AuthEnv>(async (c, next) => {
   const token = getCookie(c, 'token');
 
   if (!token) {
