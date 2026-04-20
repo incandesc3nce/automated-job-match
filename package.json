@@ -1,7 +1,10 @@
 {
   "name": "career-ai-v2",
   "private": true,
-  "scripts": {},
+  "scripts": {
+    "api:start": "bun --cwd apps/api start",
+    "api:dev": "bun --cwd apps/api dev"
+  },
   "workspaces": [
     "apps/api",
     "packages/db",
