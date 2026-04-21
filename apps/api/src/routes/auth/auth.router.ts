@@ -12,6 +12,14 @@ import { setCookie } from 'hono/cookie';
 
 const authRouter = new Hono();
 
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: true,
+  maxAge: 60 * 60 * 24 * 3, // 3 days
+  sameSite: 'Lax' as const,
+  path: '/',
+};
+
 authRouter.post('/sign-up', signUpValidator, async (c) => {
   const { name, email, password }: SignUpBody = await c.req.json();
 
@@ -38,13 +46,7 @@ authRouter.post('/sign-up', signUpValidator, async (c) => {
 
   const token = signJwt({ userId: newUser.id });
 
-  setCookie(c, 'token', token, {
-    httpOnly: true,
-    secure: true,
-    maxAge: 60 * 60 * 24 * 3,
-    sameSite: 'Lax',
-    path: '/',
-  });
+  setCookie(c, 'token', token, COOKIE_OPTIONS);
 
   return c.json(
     {
@@ -70,13 +72,7 @@ authRouter.post('/login', loginValidator, async (c) => {
 
   const token = signJwt({ userId: user.id });
 
-  setCookie(c, 'token', token, {
-    httpOnly: true,
-    secure: true,
-    maxAge: 60 * 60 * 24 * 3,
-    sameSite: 'Lax',
-    path: '/',
-  });
+  setCookie(c, 'token', token, COOKIE_OPTIONS);
 
   return c.json({
     name: user.name,
