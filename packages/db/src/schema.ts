@@ -31,6 +31,10 @@ export const cvs = pgTable('cvs', {
   location: varchar('location', { length: 255 }).notNull(),
   experience_months: integer('experience_months').notNull(),
   skills: varchar('skills', { length: 100 }).array().notNull(),
+  workFormat: varchar('work_format', {
+    length: 20,
+    enum: ['any', 'remote', 'hybrid', 'onsite'],
+  }).notNull(),
   created_at: createdAt,
   updated_at: updatedAt,
 });
