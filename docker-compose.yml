@@ -1,0 +1,12 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    container_name: career-ai-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: career_ai
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/local-database:/var/lib/postgresql/data
