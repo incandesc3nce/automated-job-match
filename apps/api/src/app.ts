@@ -6,6 +6,7 @@ import { APIError } from './utils/APIError';
 import { HTTPException } from 'hono/http-exception';
 import authRouter from './routes/auth/auth.router';
 import usersRouter from './routes/users/users.router';
+import cvsRouter from './routes/cvs/cvs.router';
 
 const app = new Hono();
 
@@ -53,7 +54,11 @@ app.notFound((c) => {
 });
 
 const api = app.basePath('/api');
-const v1 = api.basePath('/v1').route('/auth', authRouter).route('/users', usersRouter);
+const v1 = api
+  .basePath('/v1')
+  .route('/auth', authRouter)
+  .route('/users', usersRouter)
+  .route('/cvs', cvsRouter);
 
 export type AppType = typeof v1;
 export default app;
