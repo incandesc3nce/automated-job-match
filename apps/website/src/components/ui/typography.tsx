@@ -1,8 +1,10 @@
-interface TypographyProps {
-  tag: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span';
-  variant: 'default' | 'lead' | 'large' | 'small' | 'muted';
+import { ChildrenProps } from '@/types/ChildrenProps';
+
+type TypographyProps = {
+  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span';
+  variant?: 'default' | 'lead' | 'large' | 'small' | 'muted';
   className?: string;
-}
+} & ChildrenProps;
 
 const typographyVariants = {
   h1: 'scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance md:text',
@@ -22,10 +24,13 @@ export const Typography = ({
   tag = 'p',
   variant = 'default',
   className,
+  children,
 }: TypographyProps) => {
   const Tag = tag;
   const tagClass = typographyVariants[tag];
   const variantClass = typographyVariants[variant];
 
-  return <Tag className={`${tagClass} ${variantClass} ${className || ''}`} />;
+  return (
+    <Tag className={`${tagClass} ${variantClass} ${className || ''}`}>{children}</Tag>
+  );
 };
