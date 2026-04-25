@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import { ChildrenProps } from '@/types/ChildrenProps';
 
 type TypographyProps = {
@@ -32,11 +33,15 @@ export const Typography = ({
   const tagClass = typographyVariants[tag];
   const variantClass = typographyVariants[variant];
 
-  const combinedClassName =
-    `${tagClass}` +
-    (variantClass ? ` ${variantClass}` : '') +
-    (accent ? ' text-blue-600' : '') +
-    (className ? ` ${className}` : '');
-
-  return <Tag className={combinedClassName}>{children}</Tag>;
+  return (
+    <Tag
+      className={cn(
+        tagClass,
+        variantClass,
+        accent ? 'text-blue-600' : '',
+        className || '',
+      )}>
+      {children}
+    </Tag>
+  );
 };
