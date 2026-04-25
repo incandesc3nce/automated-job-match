@@ -3,6 +3,7 @@ import { ChildrenProps } from '@/types/ChildrenProps';
 type TypographyProps = {
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span';
   variant?: 'default' | 'lead' | 'large' | 'small' | 'muted';
+  accent?: boolean;
   className?: string;
 } & ChildrenProps;
 
@@ -24,13 +25,18 @@ export const Typography = ({
   tag = 'p',
   variant = 'default',
   className,
+  accent,
   children,
 }: TypographyProps) => {
   const Tag = tag;
   const tagClass = typographyVariants[tag];
   const variantClass = typographyVariants[variant];
 
-  return (
-    <Tag className={`${tagClass} ${variantClass} ${className || ''}`}>{children}</Tag>
-  );
+  const combinedClassName =
+    `${tagClass}` +
+    (variantClass ? ` ${variantClass}` : '') +
+    (accent ? ' text-blue-600' : '') +
+    (className ? ` ${className}` : '');
+
+  return <Tag className={combinedClassName}>{children}</Tag>;
 };
