@@ -1,15 +1,17 @@
 'use client';
 
 import { CardContent, CardFooter } from '../ui/card';
-import { AuthCard } from './AuthCard';
+import { AuthCard } from '../auth/AuthCard';
 import { Button } from '../ui/button';
-import { PasswordInput } from './PasswordInput';
-import { EmailInput } from './EmailInput';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-import { emailSchema } from '@/types/auth/Email';
-import { loginPasswordSchema } from '@/types/auth/Password';
+import { emailSchema } from '@/types/common/Email';
+import { loginPasswordSchema } from '@/types/common/Password';
 import * as z from 'zod';
+import { ClientFetch } from '@/utils/ClientFetch';
+import { redirect } from 'next/navigation';
+import { EmailInput } from '../common/EmailInput';
+import { PasswordInput } from '../common/PasswordInput';
 
 const loginFormSchema = z.object({
   email: emailSchema,
@@ -27,8 +29,15 @@ export const LoginForm = () => {
     },
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    console.log(data);
+  const onSubmit = async (data: LoginFormData) => {
+    const res = await ClientFetch('/api/v1/auth/login', {
+      method: 'POST',
+      body: data,
+    });
+
+    if (res.success) {
+      redirect('/dashboard');
+    }
   };
 
   return (
