@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.join(__dirname, '../../'),
   },
+  rewrites: async () => {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.API_BASE_PATH}/api/:path*`, // Proxy to backend server
+      }
+    ]
+  }
 };
 
 export default nextConfig;
