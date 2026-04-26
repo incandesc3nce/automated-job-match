@@ -3,11 +3,11 @@ import * as z from 'zod';
 export const loginPasswordSchema = z.string().min(1, 'Пароль обязателен');
 export const signUpPasswordSchema = z
   .string()
-  .min(12, 'Password must be at least 12 characters long')
-  .max(100, 'Password must be less than 100 characters long')
-  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-  .regex(/[0-9]/, 'Password must contain at least one number');
+  .min(12, 'Пароль должен быть не менее 12 символов')
+  .max(100, 'Пароль должен быть не более 100 символов')
+  .regex(/[a-z]/, 'Пароль должен содержать хотя бы одну строчную букву')
+  .regex(/[A-Z]/, 'Пароль должен содержать хотя бы одну заглавную букву')
+  .regex(/[0-9]/, 'Пароль должен содержать хотя бы одну цифру');
 
 export type LoginPassword = z.infer<typeof loginPasswordSchema>;
 export type SignUpPassword = z.infer<typeof signUpPasswordSchema>;
