@@ -6,9 +6,7 @@
     "api:dev": "bun --cwd apps/api dev"
   },
   "workspaces": [
-    "apps/api",
-    "apps/website",
-    "packages/db",
-    "packages/auth"
+    "apps/*",
+    "packages/*"
   ]
 }

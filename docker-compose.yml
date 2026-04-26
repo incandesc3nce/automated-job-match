@@ -10,3 +10,13 @@ services:
       - "5432:5432"
     volumes:
       - ./docker/local-database:/var/lib/postgresql/data
+  api:
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      DB_URL: postgres://postgres:password@db:5432/career_ai
