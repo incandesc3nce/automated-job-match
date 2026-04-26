@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { ThemeProvider } from '@/components/ui/theme-provider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -16,8 +18,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={cn('h-full', 'antialiased', 'font-sans', inter.variable)}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html
+      lang="ru"
+      className={cn('h-full', 'antialiased', 'font-sans', inter.variable)}
+      suppressHydrationWarning>
+      <body className="min-h-full flex flex-col">
+        <TooltipProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange>
+            {children}
+          </ThemeProvider>
+        </TooltipProvider>
+      </body>
     </html>
   );
 }

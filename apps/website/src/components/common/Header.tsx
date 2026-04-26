@@ -1,14 +1,15 @@
 import { getCurrentSession } from '@/lib/getCurrentSession';
 import Link from 'next/link';
 import { Typography } from '../ui/typography';
+import { ThemeToggle } from '../ui/theme-toggle';
 
 export const Header = async () => {
   const isLoggedIn = await getCurrentSession();
 
   return (
     <div className="flex justify-center sticky top-0 z-20">
-      <header className="flex items-center justify-between py-2 px-4 mt-4 w-full md:w-3/4 gap-4 bg-blue-100/80 rounded-lg border-2 border-mist-300">
-        <Link href='/'>
+      <header className="flex items-center justify-between py-2 px-4 mt-4 w-full md:w-3/4 gap-4 bg-blue-100/80 rounded-lg border-2 border-mist-300 dark:bg-mist-900/80 dark:border-mist-700">
+        <Link href="/">
           <Typography tag="h3">
             <Typography tag="span" accent>
               Career
@@ -28,10 +29,16 @@ export const Header = async () => {
             </>
           )}
           {isLoggedIn && (
-            <Link href="/dashboard">
-              <Typography tag="span">В личный кабинет</Typography>
-            </Link>
+            <>
+              <Link href="/dashboard">
+                <Typography tag="span">В личный кабинет</Typography>
+              </Link>
+              <Link href="/logout">
+                <Typography tag="span">Выйти</Typography>
+              </Link>
+            </>
           )}
+          <ThemeToggle />
         </div>
       </header>
     </div>
