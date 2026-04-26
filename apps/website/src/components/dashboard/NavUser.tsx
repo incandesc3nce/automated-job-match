@@ -16,9 +16,6 @@ import Link from 'next/link';
 
 export const NavUser = async () => {
   const user = (await getCurrentSession()) as JwtPayload;
-  if (!user) {
-    return null;
-  }
   const firstLetter = user.name.charAt(0).toUpperCase();
 
   return (
