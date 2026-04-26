@@ -1,5 +1,5 @@
 type ClientFetchOptions = Omit<RequestInit, 'body'> & {
-  body: Record<string, unknown>;
+  body?: Record<string, unknown>;
 };
 
 export const ClientFetch = async (
