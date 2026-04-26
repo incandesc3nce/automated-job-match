@@ -24,7 +24,7 @@ authRouter.post('/sign-up', signUpValidator, async (c) => {
   const { name, email, password }: SignUpBody = await c.req.json();
 
   // Check if user already exists
-  const [existingUser] = await db.select().from(users).where(eq(users.email, email));
+  const [existingUser] = await db.select().from(users).where(eq(users.email, email.toLowerCase()));
 
   if (existingUser) {
     throw new BadRequestError('User with this email already exists');
@@ -60,7 +60,7 @@ authRouter.post('/sign-up', signUpValidator, async (c) => {
 authRouter.post('/login', loginValidator, async (c) => {
   const { email, password }: LoginBody = await c.req.json();
 
-  const [user] = await db.select().from(users).where(eq(users.email, email));
+  const [user] = await db.select().from(users).where(eq(users.email, email.toLowerCase()));
   if (!user) {
     throw new BadRequestError('Invalid email or password');
   }
