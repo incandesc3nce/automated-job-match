@@ -3,7 +3,10 @@
   "private": true,
   "scripts": {
     "api:start": "bun --cwd apps/api start",
-    "api:dev": "bun --cwd apps/api dev"
+    "api:dev": "bun --cwd apps/api dev",
+    "website:start": "bun --cwd apps/website start",
+    "website:build": "bun --cwd apps/website build",
+    "website:dev": "bun --cwd apps/website dev"
   },
   "workspaces": [
     "apps/*",
