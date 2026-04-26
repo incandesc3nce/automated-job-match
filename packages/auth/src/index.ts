@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 
 export type JwtPayload = {
   userId: string;
+  email: string;
+  name: string;
 };
 
 const HASH_SECRET = process.env['HASH_SECRET']!;
@@ -33,6 +35,6 @@ export const signJwt = (payload: JwtPayload) => {
 };
 
 export const verifyJwt = (token: string): JwtPayload => {
-  const decoded =  jwt.verify(token, JWT_SECRET) as JwtPayload;
+  const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
   return decoded;
 };

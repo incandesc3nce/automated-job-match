@@ -24,7 +24,10 @@ authRouter.post('/sign-up', signUpValidator, async (c) => {
   const { name, email, password }: SignUpBody = await c.req.json();
 
   // Check if user already exists
-  const [existingUser] = await db.select().from(users).where(eq(users.email, email.toLowerCase()));
+  const [existingUser] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email.toLowerCase()));
 
   if (existingUser) {
     throw new BadRequestError('User with this email already exists');
@@ -44,7 +47,7 @@ authRouter.post('/sign-up', signUpValidator, async (c) => {
     throw new InternalServerError('Failed to create user');
   }
 
-  const token = signJwt({ userId: newUser.id });
+  const token = signJwt({ userId: newUser.id, email: newUser.email, name: newUser.name });
 
   setCookie(c, 'token', token, COOKIE_OPTIONS);
 
@@ -60,7 +63,10 @@ authRouter.post('/sign-up', signUpValidator, async (c) => {
 authRouter.post('/login', loginValidator, async (c) => {
   const { email, password }: LoginBody = await c.req.json();
 
-  const [user] = await db.select().from(users).where(eq(users.email, email.toLowerCase()));
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email.toLowerCase()));
   if (!user) {
     throw new BadRequestError('Invalid email or password');
   }
@@ -70,7 +76,7 @@ authRouter.post('/login', loginValidator, async (c) => {
     throw new BadRequestError('Invalid email or password');
   }
 
-  const token = signJwt({ userId: user.id });
+  const token = signJwt({ userId: user.id, email: user.email, name: user.name });
 
   setCookie(c, 'token', token, COOKIE_OPTIONS);
 
