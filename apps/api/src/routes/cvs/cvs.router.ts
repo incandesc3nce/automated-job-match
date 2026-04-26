@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { auth } from '@/middlewares/authMiddleware';
 import { db, cvs, eq, and, desc } from '@career-ai/db';
 import { createCvValidator, updateCvValidator } from './cvs.validator';
+import { NotFoundError } from '@/utils/APIError';
 
 const cvsRouter = new Hono().use('*', auth);
 
@@ -61,12 +62,21 @@ cvsRouter.patch('/:cvId', updateCvValidator, async (c) => {
     .where(and(eq(cvs.id, cvId), eq(cvs.user_id, c.get('userId'))))
     .returning();
 
+    if (!updatedCv) {
+      throw new NotFoundError('CV not found');
+    }
+
   return c.json(updatedCv);
 });
 
 cvsRouter.delete('/:cvId', async (c) => {
   const cvId = c.req.param('cvId');
-  await db.delete(cvs).where(and(eq(cvs.id, cvId), eq(cvs.user_id, c.get('userId'))));
+  const [deletedCv] = await db.delete(cvs).where(and(eq(cvs.id, cvId), eq(cvs.user_id, c.get('userId')))).returning();
+
+  if (!deletedCv) {
+    throw new NotFoundError('CV not found');
+  }
+
   return c.json({ success: true });
 });
 
