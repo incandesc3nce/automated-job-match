@@ -13,6 +13,7 @@ import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '../ui/sidebar';
 import { JwtPayload } from '@career-ai/auth';
 import { getCurrentSession } from '@/lib/getCurrentSession';
 import Link from 'next/link';
+import { NavUserTheme } from './NavUserTheme';
 
 export const NavUser = async () => {
   const user = (await getCurrentSession()) as JwtPayload;
@@ -64,6 +65,7 @@ export const NavUser = async () => {
                   Настройки
                 </DropdownMenuItem>
               </Link>
+              <NavUserTheme />
               <Link href={'/logout'}>
                 <DropdownMenuItem>
                   <LogOut />
