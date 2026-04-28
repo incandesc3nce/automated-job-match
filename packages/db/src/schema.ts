@@ -12,9 +12,9 @@ export const users = pgTable('users', {
   id: id,
   name: varchar('name', { length: 255 }).notNull(),
   email: varchar('email', { length: 255 }).notNull().unique(),
-  password_hash: varchar('password_hash', { length: 255 }).notNull(),
-  created_at: createdAt,
-  updated_at: updatedAt,
+  passwordHash: varchar('password_hash', { length: 255 }).notNull(),
+  createdAt: createdAt,
+  updatedAt: updatedAt,
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -24,24 +24,24 @@ export const usersRelations = relations(users, ({ many }) => ({
 // TODO: add fields
 export const cvs = pgTable('cvs', {
   id: id,
-  user_id: uuid('user_id')
+  userId: uuid('user_id')
     .notNull()
     .references(() => users.id),
   title: varchar('title', { length: 255 }).notNull(),
   location: varchar('location', { length: 255 }).notNull(),
-  experience_months: integer('experience_months').notNull(),
+  experienceMonths: integer('experience_months').notNull(),
   skills: varchar('skills', { length: 100 }).array().notNull(),
   workFormat: varchar('work_format', {
     length: 20,
     enum: ['any', 'remote', 'hybrid', 'onsite'],
   }).notNull(),
-  created_at: createdAt,
-  updated_at: updatedAt,
+  createdAt: createdAt,
+  updatedAt: updatedAt,
 });
 
 export const cvsRelations = relations(cvs, ({ one }) => ({
   user: one(users, {
-    fields: [cvs.user_id],
+    fields: [cvs.userId],
     references: [users.id],
   }),
 }));

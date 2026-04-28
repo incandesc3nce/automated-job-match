@@ -39,7 +39,7 @@ authRouter.post('/sign-up', signUpValidator, async (c) => {
     .values({
       name,
       email,
-      password_hash: passwordHash,
+      passwordHash: passwordHash,
     })
     .returning();
 
@@ -71,7 +71,7 @@ authRouter.post('/login', loginValidator, async (c) => {
     throw new BadRequestError('Invalid email or password');
   }
 
-  const isValidPassword = await verifyPassword(password, user.password_hash);
+  const isValidPassword = await verifyPassword(password, user.passwordHash);
   if (!isValidPassword) {
     throw new BadRequestError('Invalid email or password');
   }

@@ -47,13 +47,13 @@ usersRouter.patch('/me', updateUserValidator, async (c) => {
   }
 
   if (oldPassword && newPassword) {
-    const isOldPasswordValid = await verifyPassword(oldPassword, user.password_hash);
+    const isOldPasswordValid = await verifyPassword(oldPassword, user.passwordHash);
     if (!isOldPasswordValid) {
       throw new BadRequestError('Old password is incorrect');
     }
 
     const hashedNewPassword = await hashPassword(newPassword);
-    updates.password_hash = hashedNewPassword;
+    updates.passwordHash = hashedNewPassword;
   }
 
   await db.update(users).set(updates).where(eq(users.id, user.id));

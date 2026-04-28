@@ -12,15 +12,15 @@ cvsRouter.get('/', async (c) => {
       id: cvs.id,
       title: cvs.title,
       location: cvs.location,
-      experience_months: cvs.experience_months,
+      experienceMonths: cvs.experienceMonths,
       skills: cvs.skills,
       workFormat: cvs.workFormat,
-      created_at: cvs.created_at,
-      updated_at: cvs.updated_at,
+      createdAt: cvs.createdAt,
+      updatedAt: cvs.updatedAt,
     })
     .from(cvs)
-    .where(eq(cvs.user_id, c.get('userId')))
-    .orderBy(desc(cvs.updated_at));
+    .where(eq(cvs.userId, c.get('userId')))
+    .orderBy(desc(cvs.updatedAt));
 
   return c.json(userCvs);
 });
@@ -31,12 +31,12 @@ cvsRouter.post('/form', createCvValidator, async (c) => {
   const [newCv] = await db
     .insert(cvs)
     .values({
-      user_id: c.get('userId'),
+      userId: c.get('userId'),
       title,
       location,
-      experience_months: experienceMonths,
+      experienceMonths,
       skills,
-      workFormat,
+      workFormat: workFormat,
     })
     .returning();
 
@@ -55,11 +55,11 @@ cvsRouter.patch('/:cvId', updateCvValidator, async (c) => {
     .set({
       title,
       location,
-      experience_months: experienceMonths,
+      experienceMonths: experienceMonths,
       skills,
-      workFormat,
+      workFormat: workFormat,
     })
-    .where(and(eq(cvs.id, cvId), eq(cvs.user_id, c.get('userId'))))
+    .where(and(eq(cvs.id, cvId), eq(cvs.userId, c.get('userId'))))
     .returning();
 
     if (!updatedCv) {
@@ -71,7 +71,7 @@ cvsRouter.patch('/:cvId', updateCvValidator, async (c) => {
 
 cvsRouter.delete('/:cvId', async (c) => {
   const cvId = c.req.param('cvId');
-  const [deletedCv] = await db.delete(cvs).where(and(eq(cvs.id, cvId), eq(cvs.user_id, c.get('userId')))).returning();
+  const [deletedCv] = await db.delete(cvs).where(and(eq(cvs.id, cvId), eq(cvs.userId, c.get('userId')))).returning();
 
   if (!deletedCv) {
     throw new NotFoundError('CV not found');
