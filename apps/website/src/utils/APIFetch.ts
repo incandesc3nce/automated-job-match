@@ -7,8 +7,11 @@ export const APIFetch = async (
   options?: ClientFetchOptions,
 ) => {
   const body = options?.body ? JSON.stringify(options.body) : undefined;
+  const shouldUseBasePath = typeof window === 'undefined';
+  const url = shouldUseBasePath ? `${process.env.API_BASE_PATH}${pathname}` : pathname;
+
   try {
-    const res = await fetch(pathname, {
+    const res = await fetch(url, {
       ...options,
       headers: {
         ...(options?.headers || {}),
