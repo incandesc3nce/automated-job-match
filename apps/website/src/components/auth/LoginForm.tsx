@@ -30,13 +30,15 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    const res = await APIFetch('/api/v1/auth/login', {
+    const result = await APIFetch<LoginFormData>('/api/v1/auth/login', {
       method: 'POST',
       body: data,
     });
 
-    if (res.success) {
+    if (result.success) {
       redirect('/dashboard');
+    } else {
+      console.error('Login error:', result.error);
     }
   };
 

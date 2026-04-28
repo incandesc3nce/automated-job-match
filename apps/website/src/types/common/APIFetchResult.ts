@@ -1,4 +1,3 @@
-export type APIFetchResult<T> = {
-  success: boolean;
-  message: T | string;
-};
+export type APIFetchResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string };

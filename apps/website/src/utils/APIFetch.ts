@@ -9,8 +9,8 @@ export const APIFetch = async <T>(
   options?: ClientFetchOptions,
 ): Promise<APIFetchResult<T>> => {
   const body = options?.body ? JSON.stringify(options.body) : undefined;
-  const shouldUseBasePath = typeof window === 'undefined';
-  const url = shouldUseBasePath ? `${process.env.API_BASE_PATH}${pathname}` : pathname;
+  const isServer = typeof window === 'undefined';
+  const url = isServer ? `${process.env.API_BASE_PATH}${pathname}` : pathname;
 
   try {
     const res = await fetch(url, {
@@ -26,20 +26,20 @@ export const APIFetch = async <T>(
       const json = await res.json();
       return {
         success: false,
-        message: json.error || 'Ошибка при получении данных',
+        error: json.error || 'Ошибка при получении данных',
       };
     }
 
-    const data: T = await res.json();
+    const data = await res.json();
     return {
       success: true,
-      message: data,
+      data,
     };
   } catch (err) {
     console.error('APIFetch error:', err);
     return {
       success: false,
-      message: 'Ошибка при получении данных',
+      error: 'Ошибка при получении данных',
     };
   }
 };

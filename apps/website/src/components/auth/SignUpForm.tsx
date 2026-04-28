@@ -34,13 +34,15 @@ export const SignUpForm = () => {
   });
 
   const onSubmit = async (data: SignUpFormData) => {
-    const res = await APIFetch('/api/v1/auth/sign-up', {
+    const result = await APIFetch<SignUpFormData>('/api/v1/auth/sign-up', {
       method: 'POST',
       body: data,
     });
 
-    if (res.success) {
+    if (result.success) {
       redirect('/dashboard');
+    } else {
+      console.error('Sign-up error:', result.error);
     }
   };
 
