@@ -4,14 +4,14 @@ type ClientFetchOptions = Omit<RequestInit, 'body'> & {
 
 export const ClientFetch = async (
   pathname: `/${string}`,
-  options: ClientFetchOptions,
+  options?: ClientFetchOptions,
 ) => {
   const body = options?.body ? JSON.stringify(options.body) : undefined;
   try {
     const res = await fetch(pathname, {
       ...options,
       headers: {
-        ...(options.headers || {}),
+        ...(options?.headers || {}),
         'Content-Type': 'application/json',
       },
       body,
