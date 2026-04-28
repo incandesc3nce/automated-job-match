@@ -8,7 +8,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { emailSchema } from '@/types/common/Email';
 import { loginPasswordSchema } from '@/types/common/Password';
 import * as z from 'zod';
-import { ClientFetch } from '@/utils/ClientFetch';
+import { APIFetch } from '@/utils/APIFetch';
 import { redirect } from 'next/navigation';
 import { EmailInput } from '../common/EmailInput';
 import { PasswordInput } from '../common/PasswordInput';
@@ -30,7 +30,7 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    const res = await ClientFetch('/api/v1/auth/login', {
+    const res = await APIFetch('/api/v1/auth/login', {
       method: 'POST',
       body: data,
     });

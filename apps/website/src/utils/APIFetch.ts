@@ -2,7 +2,7 @@ type ClientFetchOptions = Omit<RequestInit, 'body'> & {
   body?: Record<string, unknown>;
 };
 
-export const ClientFetch = async (
+export const APIFetch = async (
   pathname: `/${string}`,
   options?: ClientFetchOptions,
 ) => {
@@ -31,7 +31,7 @@ export const ClientFetch = async (
       message: data,
     };
   } catch (err) {
-    console.error('ClientFetch error:', err);
+    console.error('APIFetch error:', err);
     return {
       success: false,
       message: 'Ошибка при получении данных',

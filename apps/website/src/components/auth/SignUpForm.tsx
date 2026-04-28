@@ -8,7 +8,7 @@ import { signUpPasswordSchema } from '@/types/common/Password';
 import { usernameSchema } from '@/types/common/Username';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ClientFetch } from '@/utils/ClientFetch';
+import { APIFetch } from '@/utils/APIFetch';
 import { redirect } from 'next/navigation';
 import { EmailInput } from '../common/EmailInput';
 import { PasswordInput } from '../common/PasswordInput';
@@ -34,7 +34,7 @@ export const SignUpForm = () => {
   });
 
   const onSubmit = async (data: SignUpFormData) => {
-    const res = await ClientFetch('/api/v1/auth/sign-up', {
+    const res = await APIFetch('/api/v1/auth/sign-up', {
       method: 'POST',
       body: data,
     });
