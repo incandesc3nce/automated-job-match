@@ -1,5 +1,5 @@
 import { EllipsisVertical, Cog, LogOut } from 'lucide-react';
-import { AvatarFallback, Avatar } from '../ui/avatar';
+import { AvatarFallback, Avatar } from '../../ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,8 +8,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '../ui/sidebar';
+} from '../../ui/dropdown-menu';
+import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '../../ui/sidebar';
 import { JwtPayload } from '@career-ai/auth';
 import { getCurrentSession } from '@/lib/getCurrentSession';
 import Link from 'next/link';

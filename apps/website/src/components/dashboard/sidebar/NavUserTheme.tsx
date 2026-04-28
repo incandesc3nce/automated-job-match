@@ -7,7 +7,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from '../ui/dropdown-menu';
+} from '../../ui/dropdown-menu';
 import { useTheme } from 'next-themes';
 
 export const NavUserTheme = () => {
