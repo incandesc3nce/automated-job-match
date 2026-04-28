@@ -1,11 +1,13 @@
+import { APIFetchResult } from '@/types/common/APIFetchResult';
+
 type ClientFetchOptions = Omit<RequestInit, 'body'> & {
   body?: Record<string, unknown>;
 };
 
-export const APIFetch = async (
+export const APIFetch = async <T>(
   pathname: `/${string}`,
   options?: ClientFetchOptions,
-) => {
+): Promise<APIFetchResult<T>> => {
   const body = options?.body ? JSON.stringify(options.body) : undefined;
   const shouldUseBasePath = typeof window === 'undefined';
   const url = shouldUseBasePath ? `${process.env.API_BASE_PATH}${pathname}` : pathname;
@@ -28,7 +30,7 @@ export const APIFetch = async (
       };
     }
 
-    const data = await res.json();
+    const data: T = await res.json();
     return {
       success: true,
       message: data,
