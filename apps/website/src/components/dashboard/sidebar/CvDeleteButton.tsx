@@ -12,14 +12,15 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Typography } from '@/components/ui/typography';
+import { SetState } from '@/types/common/SetState';
 import { CVData } from '@/types/dashboard/cvs/CV';
 import { APIFetch } from '@/utils/APIFetch';
 import { Trash2 } from 'lucide-react';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 
 type CvDeleteButtonProps = {
   cv: CVData;
-  setCvs: Dispatch<SetStateAction<CVData[]>>;
+  setCvs: SetState<CVData[]>;
 };
 
 export const CvDeleteButton = ({ cv, setCvs }: CvDeleteButtonProps) => {
