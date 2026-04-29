@@ -19,7 +19,7 @@ const skillsSchema = z
       .max(30, { message: 'Навык не может быть длиннее 30 символов' }),
   )
   .max(20, { message: 'Максимум 20 навыков' });
-const workFormatSchema = z.enum(['any', 'remote', 'office', 'hybrid'], {
+const workFormatSchema = z.enum(['any', 'remote', 'onsite', 'hybrid'], {
   message: 'Неверный формат работы',
 });
 
