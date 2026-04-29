@@ -16,6 +16,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from '@/components/ui/input-group';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -52,7 +53,13 @@ export const CvForm = (props: CvFormProps) => {
   const form = useForm<CVFormData>({
     resolver: zodResolver(cvFormSchema),
     defaultValues: {
-      ...(cv || {}),
+      ...(cv || {
+        title: '',
+        location: '',
+        experienceMonths: 0,
+        skills: [],
+        workFormat: 'any',
+      }),
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -126,6 +133,62 @@ export const CvForm = (props: CvFormProps) => {
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
+        />
+
+        <Controller
+          name="experienceMonths"
+          control={form.control}
+          render={({ field, fieldState }) => {
+            const totalMonths = Number.isFinite(field.value) ? field.value : 0;
+            const years = Math.floor(totalMonths / 12);
+            const months = totalMonths % 12;
+
+            return (
+              <FieldSet data-invalid={fieldState.invalid}>
+                <FieldLegend variant="label">Опыт работы</FieldLegend>
+                <FieldDescription>Укажите отдельно годы и месяцы.</FieldDescription>
+                <FieldGroup className="grid grid-cols-2 gap-4">
+                  <Field>
+                    <Label htmlFor="experienceYears">Годы</Label>
+                    <Input
+                      id="experienceYears"
+                      type="number"
+                      min={0}
+                      step={1}
+                      value={years}
+                      onChange={(event) => {
+                        const nextYears = Math.max(0, Number(event.target.value) || 0);
+                        field.onChange(nextYears * 12 + months);
+                      }}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="Годы"
+                    />
+                  </Field>
+                  <Field>
+                    <Label htmlFor="experienceMonths">Месяцы</Label>
+                    <Input
+                      id="experienceMonths"
+                      type="number"
+                      min={0}
+                      max={11}
+                      step={1}
+                      value={months}
+                      onChange={(event) => {
+                        const rawMonths = Number(event.target.value);
+                        const nextMonths = Number.isNaN(rawMonths)
+                          ? 0
+                          : Math.min(11, Math.max(0, rawMonths));
+                        field.onChange(years * 12 + nextMonths);
+                      }}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="Месяцы"
+                    />
+                  </Field>
+                </FieldGroup>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </FieldSet>
+            );
+          }}
         />
 
         <FieldSet>
