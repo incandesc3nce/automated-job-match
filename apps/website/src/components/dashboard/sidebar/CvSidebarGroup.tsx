@@ -17,6 +17,7 @@ import { CVData } from '@/types/dashboard/cvs/CV';
 import { CvEditButton } from './CvEditButton';
 import { CvDeleteButton } from './CvDeleteButton';
 import { useState } from 'react';
+import { CvItem } from './CvItem';
 
 type CvSidebarGroupProps = {
   cvsData: CVData[];
@@ -40,20 +41,9 @@ export const CvSidebarGroup = ({ cvsData }: CvSidebarGroupProps) => {
             <CollapsibleContent>
               <SidebarMenuSub>
                 {cvs.map((cv) => (
-                  <SidebarMenuSubItem key={cv.id} className="flex items-center">
-                    <SidebarMenuSubButton
-                      asChild
-                      className="w-full cursor-pointer flex-1 min-h-8 h-auto wrap-break-word">
-                      <Typography tag="p" className="text-sm">
-                        {cv.title}
-                      </Typography>
-                    </SidebarMenuSubButton>
-                    <div className="flex items-center gap-2 ml-auto">
-                      <CvEditButton cv={cv} setCvs={setCvs} />
-                      <CvDeleteButton cv={cv} setCvs={setCvs} />
-                    </div>
-                  </SidebarMenuSubItem>
+                  <CvItem key={cv.id} cv={cv} setCvs={setCvs} />
                 ))}
+                <SidebarMenuSubItem className="flex items-center"></SidebarMenuSubItem>
               </SidebarMenuSub>
             </CollapsibleContent>
           </SidebarMenuItem>
