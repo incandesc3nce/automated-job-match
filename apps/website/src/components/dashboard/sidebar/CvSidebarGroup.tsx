@@ -36,11 +36,11 @@ export const CvSidebarGroup = ({ cvsData }: CvSidebarGroupProps) => {
               </SidebarMenuButton>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <SidebarMenuSub>
+              <SidebarMenuSub className='overflow-x-hidden max-h-[30vh] overflow-y-auto'>
+                <CvAddButton setCvs={setCvs} />
                 {cvs.map((cv) => (
                   <CvItem key={cv.id} cv={cv} setCvs={setCvs} />
                 ))}
-                <CvAddButton setCvs={setCvs} />
               </SidebarMenuSub>
             </CollapsibleContent>
           </SidebarMenuItem>
