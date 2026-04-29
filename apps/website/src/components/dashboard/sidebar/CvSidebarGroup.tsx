@@ -7,17 +7,14 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
 } from '@/components/ui/sidebar';
 import { Typography } from '@/components/ui/typography';
 import { FileUser, ChevronRight } from 'lucide-react';
 import { Collapsible } from '@/components/ui/collapsible';
 import { CVData } from '@/types/dashboard/cvs/CV';
-import { CvEditButton } from './CvEditButton';
-import { CvDeleteButton } from './CvDeleteButton';
 import { useState } from 'react';
 import { CvItem } from './CvItem';
+import { CvAddButton } from './CvAddButton';
 
 type CvSidebarGroupProps = {
   cvsData: CVData[];
@@ -43,7 +40,7 @@ export const CvSidebarGroup = ({ cvsData }: CvSidebarGroupProps) => {
                 {cvs.map((cv) => (
                   <CvItem key={cv.id} cv={cv} setCvs={setCvs} />
                 ))}
-                <SidebarMenuSubItem className="flex items-center"></SidebarMenuSubItem>
+                <CvAddButton setCvs={setCvs} />
               </SidebarMenuSub>
             </CollapsibleContent>
           </SidebarMenuItem>

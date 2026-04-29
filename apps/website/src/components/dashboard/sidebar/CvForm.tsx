@@ -81,13 +81,13 @@ export const CvForm = (props: CvFormProps) => {
         console.error('Failed to update CV:', result.error);
       }
     } else if (action === 'create') {
-      const result = await APIFetch<CVData>('/api/v1/cvs', {
+      const result = await APIFetch<CVData>('/api/v1/cvs/form', {
         method: 'POST',
         body: data,
       });
 
       if (result.success) {
-        setCvs((prev) => [...prev, result.data]);
+        setCvs((prev) => [result.data, ...prev]);
       } else {
         console.error('Failed to create CV:', result.error);
       }
