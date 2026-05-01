@@ -24,6 +24,7 @@
     "apps/scraper": {
       "name": "scraper",
       "dependencies": {
+        "@career-ai/db": "workspace:*",
         "cheerio": "^1.2.0",
       },
       "devDependencies": {

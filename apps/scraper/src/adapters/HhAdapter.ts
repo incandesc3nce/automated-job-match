@@ -1,9 +1,12 @@
 import * as cheerio from 'cheerio';
+import { jobs } from '@career-ai/db';
 import { JobSourceAdapter } from './JobSourceAdapter';
 import type { RawJob } from '@/types/RawJob';
+import { workFormatMap } from '@/utils/workFormatMap';
 
 export class HhAdapter extends JobSourceAdapter {
   selectors = {
+    basicInfo: '[type="application/ld+json"]',
     title: '[data-qa="vacancy-title"]',
     experience: '[data-qa="vacancy-experience"]',
     location: '[data-qa="vacancy-view-raw-address"]',
@@ -43,35 +46,13 @@ export class HhAdapter extends JobSourceAdapter {
     };
   }
 
-  private parsePostedAt(postedAtText: string): Date | null {
-    const months: Record<string, number> = {
-      января: 0,
-      февраля: 1,
-      марта: 2,
-      апреля: 3,
-      мая: 4,
-      июня: 5,
-      июля: 6,
-      августа: 7,
-      сентября: 8,
-      октября: 9,
-      ноября: 10,
-      декабря: 11,
-    };
-
-    const parts = postedAtText.toLowerCase().split(' ');
-
-    if (parts.length === 3) {
-      const day = parseInt(parts[0] ?? 'null', 10);
-      const month = months[parts[1] ?? 'null'];
-      const year = parseInt(parts[2] ?? 'null', 10);
-
-      if (month && !isNaN(day) && !isNaN(year)) {
-        return new Date(year, month, day);
-      }
-    }
-
-    return null;
+  private mapWorkFormat(workFormat: string) {
+    const formats = workFormat
+      .toLowerCase()
+      .replace('или', ',')
+      .split(',')
+      .map((f) => f.trim());
+    return formats.map((format) => workFormatMap[format] || 'any');
   }
 
   async fetchJobs() {
@@ -79,6 +60,7 @@ export class HhAdapter extends JobSourceAdapter {
     const vacancyIds: string[] = [];
     const resultJobs: RawJob[] = [];
 
+    // TODO: change length or dynamically determine how many jobs to fetch based on how many are already in the database
     while (vacancyIds.length < 50) {
       console.log(`Fetching HH jobs from search...`);
       const searchRes = await fetch(
@@ -117,17 +99,46 @@ export class HhAdapter extends JobSourceAdapter {
       const jobCheerio = cheerio.load(jobHtml);
 
       const salary = this.extractSalary(jobCheerio(this.selectors.salary).text().trim());
+      let title = '';
+      let location = '';
+      let companyName = '';
+      let postedAt: Date | null = null;
+      try {
+        const basicInfo = jobCheerio(this.selectors.basicInfo).text().trim();
+        const basicInfoJson = JSON.parse(basicInfo);
+        title = basicInfoJson.title || '';
+        location = basicInfoJson.jobLocation.address.addressLocality || '';
+        companyName = basicInfoJson.hiringOrganization.name || '';
+        postedAt = basicInfoJson.datePosted ? new Date(basicInfoJson.datePosted) : null;
+      } catch (error) {
+        console.error(`Error extracting basic info for vacancy ID ${id}:`, error);
+
+        // fallback to regex extraction method
+        title =
+          jobCheerio(this.selectors.title).text().trim() ||
+          /"title": "([^"]+)"/.exec(jobHtml)?.[1] ||
+          '';
+        location =
+          jobCheerio(this.selectors.location).text().trim().split(',')[0] ||
+          /"addressLocality": "([^"]+)"/.exec(jobHtml)?.[1] ||
+          '';
+        companyName =
+          jobCheerio(this.selectors.companyName).text().trim() ||
+          /"hiringOrganization":\s*{\s*"name": "([^"]+)"/.exec(jobHtml)?.[1] ||
+          '';
+      }
 
       const rawJob: RawJob = {
         id,
-        title: jobCheerio(this.selectors.title).text().trim(),
+        title,
         experience: jobCheerio(this.selectors.experience).text().trim(),
-        location: jobCheerio(this.selectors.location).text().trim().split(',')[0] ?? null,
+        location,
         workFormat: jobCheerio(this.selectors.workFormats)
           .text()
           .trim()
-          .replace('Формат работы: ', ''),
-        companyName: jobCheerio(this.selectors.companyName).first().text().trim(),
+          .replace('Формат работы: ', '')
+          .split('·')[0]!,
+        companyName,
         salaryFrom: salary.from,
         salaryTo: salary.to,
         salaryExtra: salary.extra,
@@ -135,12 +146,14 @@ export class HhAdapter extends JobSourceAdapter {
         skills: jobCheerio(this.selectors.skills)
           .map((_, el) => jobCheerio(el).text().trim())
           .get(),
-        postedAt: this.parsePostedAt(
-          jobCheerio(this.selectors.postedAt).first().find('span').text().trim(),
-        ),
+        postedAt,
       };
 
       console.log(`Extracted job: ${rawJob.title} at ${rawJob.companyName}`);
+      if (!rawJob.title || !rawJob.companyName) {
+        console.warn(`Skipping job with missing title or company name. Vacancy ID: ${id}`);
+        continue;
+      }
       resultJobs.push(rawJob);
     }
 
@@ -148,7 +161,7 @@ export class HhAdapter extends JobSourceAdapter {
     return resultJobs;
   }
 
-  normalize(raw: RawJob) {
+  normalize(raw: RawJob): typeof jobs.$inferInsert {
     return {
       source: 'hh',
       externalId: raw.id,
@@ -156,7 +169,7 @@ export class HhAdapter extends JobSourceAdapter {
       experience: raw.experience,
       location: raw.location,
       companyName: raw.companyName,
-      workFormat: raw.workFormat,
+      workFormat: this.mapWorkFormat(raw.workFormat),
       salaryFrom: raw.salaryFrom,
       salaryTo: raw.salaryTo,
       salaryExtra: raw.salaryExtra,
@@ -164,6 +177,6 @@ export class HhAdapter extends JobSourceAdapter {
       skills: raw.skills,
       postedAt: raw.postedAt,
       fetchedAt: new Date(),
-    }
+    };
   }
 }

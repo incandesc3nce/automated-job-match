@@ -2,9 +2,9 @@ export type RawJob = {
   id: string;
   title: string;
   experience: string;
-  location: string | null;
+  location: string;
   companyName: string;
-  workFormat: string | null;
+  workFormat: string;
   salaryFrom: string | null;
   salaryTo: string | null;
   salaryExtra: string | null;

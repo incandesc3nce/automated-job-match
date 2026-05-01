@@ -10,5 +10,5 @@ export abstract class JobSourceAdapter {
   };
 
   abstract fetchJobs(): Promise<RawJob[]>;
-  abstract normalize(raw: RawJob): any;
+  abstract normalize(raw: RawJob): unknown;
 }
