@@ -1,4 +1,4 @@
-import { db, eq, jobs, sql } from '@career-ai/db';
+import { db, eq, jobs } from '@career-ai/db';
 import {
   Worker,
   Job,
@@ -39,8 +39,14 @@ export const startVectorizeJobWorker = () => {
     connection: connectionOptions,
   });
 
-  worker.on('failed', (job, err) => {
+  worker.on('failed', async (job, err) => {
     console.error(`[VectorizeJob] Job failed: ${job?.data.jobId}`, err);
+    if (job?.data.jobId) {
+      await db
+        .update(jobs)
+        .set({ embeddingStatus: 'failed' })
+        .where(eq(jobs.id, job.data.jobId));
+    }
   });
 
   worker.on('completed', (job) => {
