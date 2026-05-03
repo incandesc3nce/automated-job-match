@@ -18,6 +18,8 @@ async function main() {
     console.log('All workers shut down. Exiting process.');
     process.exit(0);
   });
+
+  console.log('LLM Worker started and healthy. Waiting for jobs...');
 }
 
 main();
