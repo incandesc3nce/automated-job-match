@@ -1,4 +1,4 @@
-import { LMStudioProvider } from './LMStudioProvider';
+import { LMStudioProvider } from './lmstudio/LMStudioProvider';
 
 type EnvProvider = 'lmstudio' | string | undefined;
 

@@ -1,6 +1,6 @@
 import type { GenerateArgs, LLMProvider } from '@/types/LLMProvider';
-import type { LMStudioEmbedResponse } from '@/types/lmstudio/embedding';
-import type { LMStudioGenerateResponse } from '@/types/lmstudio/generate';
+import type { LMStudioEmbedResponse } from './types/embedding';
+import type { LMStudioGenerateResponse } from './types/generate';
 
 export class LMStudioProvider implements LLMProvider {
   constructor(
