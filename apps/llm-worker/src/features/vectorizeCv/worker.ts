@@ -1,8 +1,9 @@
-import { cvs, db, eq, sql } from '@career-ai/db';
+import { cvs, db, eq } from '@career-ai/db';
 import {
+  type VectorizeCvPayload,
   connectionOptions,
   Job,
-  type VectorizeCvPayload,
+  matchCvToJobsQueue,
   Worker,
 } from '@career-ai/queue';
 import { buildVectorizeCvInput } from './buildInput';
@@ -24,10 +25,12 @@ const handleVectorizeCvJob = async (job: Job<VectorizeCvPayload>) => {
   const vector = await llm.embed(input);
   await job.updateProgress(80);
 
-  await db
-    .update(cvs)
-    .set({ embeddings: vector })
-    .where(eq(cvs.id, cvId));
+  await db.update(cvs).set({ embeddings: vector }).where(eq(cvs.id, cvId));
+  await job.updateProgress(90);
+
+  await matchCvToJobsQueue.add('match-cv-to-job', {
+    cvId,
+  });
   await job.updateProgress(100);
 };
 

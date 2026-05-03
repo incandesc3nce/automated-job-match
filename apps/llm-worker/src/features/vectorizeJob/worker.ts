@@ -1,9 +1,10 @@
 import { db, eq, jobs } from '@career-ai/db';
 import {
+  type VectorizeJobPayload,
   Worker,
   Job,
-  type VectorizeJobPayload,
   connectionOptions,
+  matchJobToCvsQueue,
 } from '@career-ai/queue';
 import { buildVectorizeJobInput } from './buildInput';
 import { llm } from '@/providers/llm';
@@ -31,6 +32,11 @@ const handleVectorizeJob = async (job: Job<VectorizeJobPayload>) => {
       embeddingStatus: 'completed',
     })
     .where(eq(jobs.id, jobId));
+  await job.updateProgress(90);
+
+  await matchJobToCvsQueue.add('match-job-to-cvs', {
+    jobId,
+  });
   await job.updateProgress(100);
 };
 
