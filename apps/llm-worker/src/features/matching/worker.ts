@@ -31,7 +31,9 @@ const handleMatchGenerationJob = async (job: Job<MatchGenerationPayload>) => {
   });
   await job.updateProgress(60);
 
-  const { score, reasoning } = matchSchema.parse(JSON.parse(matchResult));
+  const { score, reasoning, matchedSkills, missingSkills } = matchSchema.parse(
+    JSON.parse(matchResult),
+  );
   await job.updateProgress(80);
 
   await db.insert(matches).values({
@@ -40,6 +42,8 @@ const handleMatchGenerationJob = async (job: Job<MatchGenerationPayload>) => {
     jobId,
     score,
     reasoning,
+    matchedSkills,
+    missingSkills,
     similarity,
   });
   await job.updateProgress(100);
@@ -61,7 +65,9 @@ export const startMatchGenerationWorker = () => {
   });
 
   worker.on('completed', (job) => {
-    console.log(`[Match Generation] Job completed. CV: ${job?.data.cvId}, Job: ${job?.data.jobId}`);
+    console.log(
+      `[Match Generation] Job completed. CV: ${job?.data.cvId}, Job: ${job?.data.jobId}`,
+    );
   });
 
   return worker;

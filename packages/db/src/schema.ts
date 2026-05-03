@@ -118,6 +118,8 @@ export const matches = pgTable('matches', {
   score: integer('score').notNull(),
   reasoning: text('reasoning').notNull(),
   similarity: real('similarity').notNull(),
+  matchedSkills: varchar('matched_skills', { length: 255 }).array().notNull(),
+  missingSkills: varchar('missing_skills', { length: 255 }).array().notNull(),
   hidden: boolean('hidden').default(false).notNull(),
   createdAt: createdAt,
   updatedAt: updatedAt,
