@@ -36,6 +36,7 @@ const handleMatchGenerationJob = async (job: Job<MatchGenerationPayload>) => {
 
   await db.insert(matches).values({
     cvId,
+    userId: cvRow.userId,
     jobId,
     score,
     reasoning,

@@ -36,6 +36,7 @@ export const users = pgTable('users', {
 
 export const usersRelations = relations(users, ({ many }) => ({
   cvs: many(cvs),
+  matches: many(matches),
 }));
 
 // TODO: add fields
@@ -105,6 +106,9 @@ export const jobs = pgTable(
 // TODO: review field if needed
 export const matches = pgTable('matches', {
   id: id,
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id),
   cvId: uuid('cv_id')
     .notNull()
     .references(() => cvs.id),
@@ -120,6 +124,10 @@ export const matches = pgTable('matches', {
 });
 
 export const matchesRelations = relations(matches, ({ one }) => ({
+  user: one(users, {
+    fields: [matches.userId],
+    references: [users.id],
+  }),
   cv: one(cvs, {
     fields: [matches.cvId],
     references: [cvs.id],
