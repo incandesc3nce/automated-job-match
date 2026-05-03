@@ -27,7 +27,7 @@ export const ServerAPIFetch = async <T>(
       };
     }
 
-    const data = await res.json();
+    const data = await res.json() as T;
     return {
       success: true,
       data,
