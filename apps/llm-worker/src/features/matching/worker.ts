@@ -56,12 +56,12 @@ export const startMatchGenerationWorker = () => {
 
   worker.on('failed', (job, err) => {
     console.error(
-      `[Match Generation] Job failed: ${job?.data.cvId}, Error: ${err.message}`,
+      `[Match Generation] Job failed. CV: ${job?.data.cvId}, Job: ${job?.data.jobId} Error: ${err.message}`,
     );
   });
 
   worker.on('completed', (job) => {
-    console.log(`[Match Generation] Job completed: ${job?.data.cvId}`);
+    console.log(`[Match Generation] Job completed. CV: ${job?.data.cvId}, Job: ${job?.data.jobId}`);
   });
 
   return worker;
