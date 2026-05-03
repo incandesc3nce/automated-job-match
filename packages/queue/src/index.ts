@@ -11,7 +11,8 @@ type CvId = {
 export type ShortenDescriptionPayload = JobId;
 export type VectorizeJobPayload = JobId;
 export type VectorizeCvPayload = CvId;
-export type MatchJobCvPayload = JobId & CvId;
+export type MatchCvToJobPayload = CvId;
+export type MatchJobToCvsPayload = JobId;
 
 export const connectionOptions: ConnectionOptions = {
   host: process.env.REDIS_HOST,
@@ -31,7 +32,13 @@ export const vectorizeJobQueue = new Queue<VectorizeJobPayload>('vectorize-job',
 export const vectorizeCvQueue = new Queue<VectorizeCvPayload>('vectorize-cv', {
   connection: connectionOptions,
 });
-export const matchJobCvQueue = new Queue<MatchJobCvPayload>('match-job-cv', {
+export const matchCvToJobsQueue = new Queue<MatchCvToJobPayload>('match-cv-to-job', {
+  connection: connectionOptions,
+  defaultJobOptions: {
+    attempts: 3,
+  },
+});
+export const matchJobToCvsQueue = new Queue<MatchJobToCvsPayload>('match-job-to-cvs', {
   connection: connectionOptions,
   defaultJobOptions: {
     attempts: 3,
