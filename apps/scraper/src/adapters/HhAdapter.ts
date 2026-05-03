@@ -3,6 +3,7 @@ import { jobs } from '@career-ai/db';
 import { JobSourceAdapter } from './JobSourceAdapter';
 import type { RawJob } from '@/types/RawJob';
 import { workFormatMap } from '@/utils/workFormatMap';
+import { sleep } from '@/utils/sleep';
 
 export class HhAdapter extends JobSourceAdapter {
   selectors = {
@@ -86,7 +87,9 @@ export class HhAdapter extends JobSourceAdapter {
         }
       }
 
-      setTimeout(() => {}, 3000); // add delay between page requests to avoid rate limiting
+      console.log(`[hh] Extracted ${vacancyIds.length} vacancy IDs so far...`);
+      console.log(`[hh] Waiting before fetching next page...`);
+      await sleep(3); // add delay between page requests to avoid rate limiting
       page++;
     }
 
@@ -153,7 +156,8 @@ export class HhAdapter extends JobSourceAdapter {
       console.log(`[hh] Extracted job: ${rawJob.title} at ${rawJob.companyName}`);
       if (!rawJob.title || !rawJob.companyName) {
         console.warn(`[hh] Skipping job with missing title or company name. Vacancy ID: ${id}`);
-        setTimeout(() => {}, 1000); // add delay before continuing to avoid rapid logging
+        await sleep(10); // add delay before next request
+        // TODO: retry failed job fetch
         continue;
       }
       resultJobs.push(rawJob);
