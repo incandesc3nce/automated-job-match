@@ -33,7 +33,7 @@ export const vectorizeJobQueue = new Queue<VectorizeJobPayload>('vectorize-job',
 export const vectorizeCvQueue = new Queue<VectorizeCvPayload>('vectorize-cv', {
   connection: connectionOptions,
 });
-export const matchCvToJobsQueue = new Queue<MatchCvToJobPayload>('match-cv-to-job', {
+export const matchCvToJobsQueue = new Queue<MatchCvToJobPayload>('match-cv-to-jobs', {
   connection: connectionOptions,
   defaultJobOptions: {
     attempts: 3,

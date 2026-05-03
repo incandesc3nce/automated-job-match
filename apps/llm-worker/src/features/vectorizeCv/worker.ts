@@ -28,7 +28,7 @@ const handleVectorizeCvJob = async (job: Job<VectorizeCvPayload>) => {
   await db.update(cvs).set({ embeddings: vector }).where(eq(cvs.id, cvId));
   await job.updateProgress(90);
 
-  await matchCvToJobsQueue.add('match-cv-to-job', {
+  await matchCvToJobsQueue.add('match-cv-to-jobs', {
     cvId,
   });
   await job.updateProgress(100);
