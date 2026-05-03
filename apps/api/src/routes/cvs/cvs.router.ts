@@ -3,6 +3,7 @@ import { auth } from '@/middlewares/authMiddleware';
 import { db, cvs, eq, and, desc } from '@career-ai/db';
 import { createCvValidator, updateCvValidator } from './cvs.validator';
 import { NotFoundError } from '@/utils/APIError';
+import { vectorizeCvQueue } from '@career-ai/queue';
 
 const cvsRouter = new Hono().use('*', auth);
 
@@ -40,6 +41,14 @@ cvsRouter.post('/form', createCvValidator, async (c) => {
     })
     .returning();
 
+  if (!newCv) {
+    throw new Error('Failed to create CV');
+  }
+
+  await vectorizeCvQueue.add('vectorize-cv', {
+    cvId: newCv.id,
+  });
+
   return c.json(newCv, 201);
 });
 
@@ -62,16 +71,23 @@ cvsRouter.patch('/:cvId', updateCvValidator, async (c) => {
     .where(and(eq(cvs.id, cvId), eq(cvs.userId, c.get('userId'))))
     .returning();
 
-    if (!updatedCv) {
-      throw new NotFoundError('CV not found');
-    }
+  if (!updatedCv) {
+    throw new NotFoundError('CV not found');
+  }
+
+  await vectorizeCvQueue.add('vectorize-cv', {
+    cvId: updatedCv.id,
+  });
 
   return c.json(updatedCv);
 });
 
 cvsRouter.delete('/:cvId', async (c) => {
   const cvId = c.req.param('cvId');
-  const [deletedCv] = await db.delete(cvs).where(and(eq(cvs.id, cvId), eq(cvs.userId, c.get('userId')))).returning();
+  const [deletedCv] = await db
+    .delete(cvs)
+    .where(and(eq(cvs.id, cvId), eq(cvs.userId, c.get('userId'))))
+    .returning();
 
   if (!deletedCv) {
     throw new NotFoundError('CV not found');
