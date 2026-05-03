@@ -31,6 +31,7 @@
       },
       "peerDependencies": {
         "@career-ai/db": "workspace:*",
+        "@career-ai/queue": "workspace:*",
         "typescript": "^5",
       },
     },
@@ -38,6 +39,7 @@
       "name": "scraper",
       "dependencies": {
         "@career-ai/db": "workspace:*",
+        "@career-ai/queue": "workspace:*",
         "cheerio": "^1.2.0",
       },
       "devDependencies": {

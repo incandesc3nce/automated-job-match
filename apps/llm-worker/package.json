@@ -12,7 +12,8 @@
   },
   "peerDependencies": {
     "typescript": "^5",
-    "@career-ai/db": "workspace:*"
+    "@career-ai/db": "workspace:*",
+    "@career-ai/queue": "workspace:*"
   },
   "dependencies": {
     "zod": "^4.4.2"
