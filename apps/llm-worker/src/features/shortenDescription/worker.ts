@@ -61,4 +61,6 @@ export const startShortenDescriptionWorker = () => {
   worker.on('completed', (job) => {
     console.log(`[ShortenDescription] Job completed: ${job?.data.jobId}`);
   });
+
+  return worker;
 };
