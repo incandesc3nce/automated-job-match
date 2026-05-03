@@ -1,7 +1,8 @@
 import { db, eq, jobs } from '@career-ai/db';
 import {
-  Job,
   type ShortenDescriptionPayload,
+  connectionOptions,
+  Job,
   vectorizeJobQueue,
   Worker,
 } from '@career-ai/queue';
@@ -50,6 +51,9 @@ export const startShortenDescriptionWorker = () => {
   const worker = new Worker<ShortenDescriptionPayload>(
     'shorten-description',
     handleShortenDescriptionJob,
+    {
+      connection: connectionOptions,
+    },
   );
 
   worker.on('failed', (job, err) => {
