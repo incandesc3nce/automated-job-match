@@ -4,6 +4,7 @@ import { CvEditButton } from './CvEditButton';
 import { CvDeleteButton } from './CvDeleteButton';
 import { CVData } from '@/types/dashboard/cvs/CV';
 import { SetState } from '@/types/common/SetState';
+import Link from 'next/link';
 
 type CvItemProps = {
   cv: CVData;
@@ -16,9 +17,11 @@ export const CvItem = ({ cv, setCvs }: CvItemProps) => {
       <SidebarMenuSubButton
         asChild
         className="w-full cursor-pointer flex-1 min-h-8 h-auto wrap-break-word">
-        <Typography tag="p" className="text-sm">
-          {cv.title}
-        </Typography>
+        <Link href={`/dashboard/matches/${cv.id}`}>
+          <Typography tag="p" className="text-sm">
+            {cv.title}
+          </Typography>
+        </Link>
       </SidebarMenuSubButton>
       <div className="flex items-center gap-2 ml-auto">
         <CvEditButton cv={cv} setCvs={setCvs} />
