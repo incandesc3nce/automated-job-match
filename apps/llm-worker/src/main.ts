@@ -1,4 +1,6 @@
 import { startShortenDescriptionWorker } from './features/shortenDescription/worker';
+import { startVectorizeCvWorker } from './features/vectorizeCv/worker';
+import { startVectorizeJobWorker } from './features/vectorizeJob/worker';
 import { llm } from './providers/llm';
 
 async function main() {
@@ -10,7 +12,11 @@ async function main() {
     process.exit(1);
   }
 
-  const workers = [startShortenDescriptionWorker()];
+  const workers = [
+    startShortenDescriptionWorker(),
+    startVectorizeJobWorker(),
+    startVectorizeCvWorker(),
+  ];
 
   process.on('SIGTERM', async () => {
     console.log('Received SIGTERM, shutting down gracefully...');
