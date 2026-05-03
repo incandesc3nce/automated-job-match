@@ -218,6 +218,7 @@ export class HhAdapter extends JobSourceAdapter {
           description: jobs.description,
           skills: jobs.skills,
           fetchedAt: jobs.fetchedAt,
+          embeddingStatus: 'pending',
         },
       })
       .returning({ id: jobs.id, title: jobs.title });
