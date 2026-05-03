@@ -1,7 +1,23 @@
+import { DashboardHeader } from '@/components/common/DashboardHeader';
+import {
+  BreadcrumbItem,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { SidebarInset } from '@/components/ui/sidebar';
+import { Typography } from '@/components/ui/typography';
+
 export default function DashboardPage() {
   return (
-    <div>
-      <h1>Dashboard</h1>
-    </div>
-  )
+    <SidebarInset>
+      <DashboardHeader>
+        <BreadcrumbItem className="hidden md:block">
+          <BreadcrumbPage>Дэшборд</BreadcrumbPage>
+        </BreadcrumbItem>
+      </DashboardHeader>
+      <div className="px-4">
+        <Typography tag='h2'>Выберите резюме, чтобы получить актуальные подборки вакансий</Typography>
+      </div>
+    </SidebarInset>
+  );
 }
