@@ -2,8 +2,8 @@ import { startMatchingCvToJobsWorker } from './features/matching/cv/worker';
 import { startMatchingJobToCvsWorker } from './features/matching/job/worker';
 import { startMatchGenerationWorker } from './features/matching/worker';
 import { startShortenDescriptionWorker } from './features/shortenDescription/worker';
-import { startVectorizeCvWorker } from './features/vectorizeCv/worker';
-import { startVectorizeJobWorker } from './features/vectorizeJob/worker';
+import { startVectorizeCvWorker } from './features/vectorize/cv/worker';
+import { startVectorizeJobWorker } from './features/vectorize/job/worker';
 import { llm } from './providers/llm';
 
 async function main() {
