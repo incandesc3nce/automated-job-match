@@ -17,3 +17,5 @@ export const scrapeJobsQueue = new Queue<string>('scrape-jobs');
 export const vectorizeJobQueue = new Queue<VectorizeJobPayload>('vectorize-job');
 export const vectorizeCvQueue = new Queue<VectorizeCvPayload>('vectorize-cv');
 export const matchJobCvQueue = new Queue<MatchJobCvPayload>('match-job-cv');
+
+export { Worker, Job } from 'bullmq';
