@@ -1,9 +1,6 @@
-import type { cvs, jobs } from '@career-ai/db';
-import type { LLMProvider } from '@/types/LLMProvider';
+import type { GenerateArgs, LLMProvider } from '@/types/LLMProvider';
 import type { LMStudioEmbedResponse } from '@/types/lmstudio/embedding';
 import type { LMStudioGenerateResponse } from '@/types/lmstudio/generate';
-import type { Match } from '@/types/Match';
-import { buildMatchPrompt, SYSTEM_PROMPT } from '@/utils/prompts';
 
 export class LMStudioProvider implements LLMProvider {
   constructor(
@@ -12,7 +9,7 @@ export class LMStudioProvider implements LLMProvider {
     private embeddingModel: string,
   ) {}
 
-  async generate(cv: typeof cvs.$inferSelect, job: typeof jobs.$inferSelect) {
+  async generate({ input, systemPrompt }: GenerateArgs) {
     const res = await fetch(`${this.baseUrl}/api/v1/chat`, {
       method: 'POST',
       headers: {
@@ -24,8 +21,8 @@ export class LMStudioProvider implements LLMProvider {
         temperature: 0.1,
         reasoning: 'off',
         store: false,
-        system_prompt: SYSTEM_PROMPT,
-        input: buildMatchPrompt(cv, job),
+        system_prompt: systemPrompt,
+        input,
       }),
     });
 
@@ -35,9 +32,8 @@ export class LMStudioProvider implements LLMProvider {
 
     const json = (await res.json()) as LMStudioGenerateResponse;
     const content = json.output.map((o) => o.content).join('\n');
-    const match: Match = JSON.parse(content);
 
-    return match;
+    return content;
   }
 
   async embed(text: string) {

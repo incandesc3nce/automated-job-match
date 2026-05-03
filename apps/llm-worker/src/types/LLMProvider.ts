@@ -1,8 +1,10 @@
-import type { Match } from './Match';
-import { cvs, jobs } from '@career-ai/db';
+export type GenerateArgs = {
+  input: string;
+  systemPrompt?: string;
+};
 
 export interface LLMProvider {
-  generate(cv: typeof cvs.$inferSelect, job: typeof jobs.$inferSelect): Promise<Match>;
+  generate(args: GenerateArgs): Promise<string>;
   embed(text: string): Promise<number[]>;
   healthCheck(): Promise<boolean>;
 }
