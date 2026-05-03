@@ -33,6 +33,9 @@ export const vectorizeCvQueue = new Queue<VectorizeCvPayload>('vectorize-cv', {
 });
 export const matchJobCvQueue = new Queue<MatchJobCvPayload>('match-job-cv', {
   connection: connectionOptions,
+  defaultJobOptions: {
+    attempts: 3,
+  },
 });
 
 export { Worker, Job } from 'bullmq';

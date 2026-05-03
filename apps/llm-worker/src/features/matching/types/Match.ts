@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-const matchSchema = z.object({
+export const matchSchema = z.object({
   score: z.number().min(0).max(100),
   matchedSkills: z.array(z.string()),
   missingSkills: z.array(z.string()),
