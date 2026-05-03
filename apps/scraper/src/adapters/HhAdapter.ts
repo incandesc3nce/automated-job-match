@@ -88,8 +88,6 @@ export class HhAdapter extends JobSourceAdapter {
       }
 
       console.log(`[hh] Extracted ${vacancyIds.length} vacancy IDs so far...`);
-      console.log(`[hh] Waiting before fetching next page...`);
-      await sleep(3); // add delay between page requests to avoid rate limiting
       page++;
     }
 
@@ -155,7 +153,9 @@ export class HhAdapter extends JobSourceAdapter {
 
       console.log(`[hh] Extracted job: ${rawJob.title} at ${rawJob.companyName}`);
       if (!rawJob.title || !rawJob.companyName) {
-        console.warn(`[hh] Skipping job with missing title or company name. Vacancy ID: ${id}`);
+        console.warn(
+          `[hh] Skipping job with missing title or company name. Vacancy ID: ${id}`,
+        );
         await sleep(10); // add delay before next request
         // TODO: retry failed job fetch
         continue;
@@ -184,5 +184,17 @@ export class HhAdapter extends JobSourceAdapter {
       postedAt: raw.postedAt,
       fetchedAt: new Date(),
     };
+  }
+
+  async flow() {
+    const rawJobs = await this.fetchJobs();
+    const normalizedJobs = rawJobs.map((job) => this.normalize(job));
+    const dedupedJobsMap = new Map<string, ReturnType<typeof this.normalize>>();
+    for (const job of normalizedJobs) {
+      const key = `${job.source}-${job.externalId}`;
+      dedupedJobsMap.set(key, job);
+    }
+
+    return [...dedupedJobsMap.values()];
   }
 }
