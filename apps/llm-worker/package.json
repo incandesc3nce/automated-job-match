@@ -13,5 +13,8 @@
   "peerDependencies": {
     "typescript": "^5",
     "@career-ai/db": "workspace:*"
+  },
+  "dependencies": {
+    "zod": "^4.4.2"
   }
 }
