@@ -13,6 +13,7 @@ export type VectorizeJobPayload = JobId;
 export type VectorizeCvPayload = CvId;
 export type MatchCvToJobPayload = CvId;
 export type MatchJobToCvsPayload = JobId;
+export type MatchGenerationPayload = JobId & CvId;
 
 export const connectionOptions: ConnectionOptions = {
   host: process.env.REDIS_HOST,
@@ -44,5 +45,14 @@ export const matchJobToCvsQueue = new Queue<MatchJobToCvsPayload>('match-job-to-
     attempts: 3,
   },
 });
+export const matchGenerationQueue = new Queue<MatchGenerationPayload>(
+  'match-generation',
+  {
+    connection: connectionOptions,
+    defaultJobOptions: {
+      attempts: 3,
+    },
+  },
+);
 
 export { Worker, Job } from 'bullmq';

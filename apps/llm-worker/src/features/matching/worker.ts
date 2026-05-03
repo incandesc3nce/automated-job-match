@@ -1,11 +1,16 @@
 import { llm } from '@/providers/llm';
 import { cvs, db, eq, jobs, matches } from '@career-ai/db';
-import { Worker, Job, type MatchJobCvPayload, connectionOptions } from '@career-ai/queue';
+import {
+  type MatchGenerationPayload,
+  Worker,
+  Job,
+  connectionOptions,
+} from '@career-ai/queue';
 import { buildMatchPrompt, SYSTEM_PROMPT } from './buildInput';
 import { matchSchema } from './types/Match';
 
-const handleMatchingJob = async (job: Job<MatchJobCvPayload>) => {
-  const { jobId, cvId } = job.data;
+const handleMatchGenerationJob = async (job: Job<MatchGenerationPayload>) => {
+  const { cvId, jobId } = job.data;
   await job.updateProgress(10);
 
   const [cvRow] = await db.select().from(cvs).where(eq(cvs.id, cvId));
@@ -38,19 +43,23 @@ const handleMatchingJob = async (job: Job<MatchJobCvPayload>) => {
   await job.updateProgress(100);
 };
 
-export const startMatchingWorker = () => {
-  const worker = new Worker<MatchJobCvPayload>('match-job-cv', handleMatchingJob, {
-    connection: connectionOptions,
-  });
+export const startMatchGenerationWorker = () => {
+  const worker = new Worker<MatchGenerationPayload>(
+    'match-generation',
+    handleMatchGenerationJob,
+    {
+      connection: connectionOptions,
+    },
+  );
 
   worker.on('failed', (job, err) => {
     console.error(
-      `[Matching] Job failed: ${job?.data.jobId}, CV: ${job?.data.cvId}, Error: ${err.message}`,
+      `[Match Generation] Job failed: ${job?.data.cvId}, Error: ${err.message}`,
     );
   });
 
   worker.on('completed', (job) => {
-    console.log(`[Matching] Job completed: ${job?.data.jobId}, CV: ${job?.data.cvId}`);
+    console.log(`[Match Generation] Job completed: ${job?.data.cvId}`);
   });
 
   return worker;
