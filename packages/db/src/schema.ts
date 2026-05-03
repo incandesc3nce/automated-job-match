@@ -47,6 +47,7 @@ export const cvs = pgTable('cvs', {
   experienceMonths: integer('experience_months').notNull(),
   skills: varchar('skills', { length: 100 }).array().notNull(),
   workFormat: workFormat.notNull(),
+  embeddings: vector('embeddings', { dimensions: 1536 }),
   createdAt: createdAt,
   updatedAt: updatedAt,
 });
