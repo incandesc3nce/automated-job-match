@@ -1,9 +1,10 @@
 import { Hono } from 'hono';
 import { auth } from '@/middlewares/authMiddleware';
-import { db, cvs, eq, and, desc } from '@career-ai/db';
+import { db, cvs, eq, and, desc, matches, jobs, count } from '@career-ai/db';
 import { createCvValidator, updateCvValidator } from './cvs.validator';
-import { NotFoundError } from '@/utils/APIError';
+import { BadRequestError, NotFoundError } from '@/utils/APIError';
 import { vectorizeCvQueue } from '@career-ai/queue';
+import { jobSourceLinkMap } from '@/utils/jobSourceLinkMap';
 
 const cvsRouter = new Hono().use('*', auth);
 
@@ -24,6 +25,63 @@ cvsRouter.get('/', async (c) => {
     .orderBy(desc(cvs.updatedAt));
 
   return c.json(userCvs);
+});
+
+cvsRouter.get('/:cvId/matches', async (c) => {
+  const cvId = c.req.param('cvId');
+  const limit = Number(c.req.query('limit') || 30);
+  const offset = Number(c.req.query('offset') || 0);
+  if (!cvId) {
+    throw new BadRequestError('cvId is required');
+  }
+
+  const matchesRows = await db
+    .select({
+      id: matches.id,
+      score: matches.score,
+      reasoning: matches.reasoning,
+      hidden: matches.hidden,
+      createdAt: matches.createdAt,
+      updatedAt: matches.updatedAt,
+      jobTitle: jobs.title,
+      jobSource: jobs.source,
+      jobExternalId: jobs.externalId,
+      jobCompanyName: jobs.companyName,
+      jobLocation: jobs.location,
+      jobDescription: jobs.shortDescription,
+      jobWorkFormat: jobs.workFormat,
+      jobSalaryFrom: jobs.salaryFrom,
+      jobSalaryTo: jobs.salaryTo,
+      jobSalaryExtra: jobs.salaryExtra,
+      jobSkills: jobs.skills,
+    })
+    .from(matches)
+    .leftJoin(jobs, eq(matches.jobId, jobs.id))
+    .where(and(eq(matches.cvId, cvId), eq(matches.userId, c.get('userId'))))
+    .orderBy(desc(matches.createdAt), desc(matches.score))
+    .limit(limit)
+    .offset(offset);
+
+  const [total] = await db
+    .select({ count: count() })
+    .from(matches)
+    .where(
+      and(
+        and(eq(matches.cvId, cvId), eq(matches.userId, c.get('userId'))),
+        eq(matches.hidden, false),
+      ),
+    );
+
+  return c.json({
+    matches: matchesRows
+      .filter((match) => !match.hidden)
+      .map((match) => ({
+        ...match,
+        externalUrl: jobSourceLinkMap[match.jobSource!]!(match.jobExternalId!),
+      })),
+    hiddenMatches: matchesRows.filter((match) => match.hidden),
+    total: total?.count || 0,
+  });
 });
 
 cvsRouter.post('/form', createCvValidator, async (c) => {

@@ -7,6 +7,7 @@ import { HTTPException } from 'hono/http-exception';
 import authRouter from './routes/auth/auth.router';
 import usersRouter from './routes/users/users.router';
 import cvsRouter from './routes/cvs/cvs.router';
+import matchesRouter from './routes/matches/matches.router';
 
 const app = new Hono();
 
@@ -58,7 +59,8 @@ const v1 = api
   .basePath('/v1')
   .route('/auth', authRouter)
   .route('/users', usersRouter)
-  .route('/cvs', cvsRouter);
+  .route('/cvs', cvsRouter)
+  .route('/matches', matchesRouter);
 
 export type AppType = typeof v1;
 export default app;
