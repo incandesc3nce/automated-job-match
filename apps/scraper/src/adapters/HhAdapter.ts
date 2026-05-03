@@ -61,8 +61,8 @@ export class HhAdapter extends JobSourceAdapter {
     const resultJobs: RawJob[] = [];
 
     // TODO: change length or dynamically determine how many jobs to fetch based on how many are already in the database
-    while (vacancyIds.length < 50) {
-      console.log(`Fetching HH jobs from search...`);
+    while (vacancyIds.length < 100) {
+      console.log(`[hh] Fetching jobs from search...`);
       const searchRes = await fetch(
         `https://hh.ru/search/vacancy?${new URLSearchParams({ page: String(page) })}`,
         {
@@ -70,12 +70,12 @@ export class HhAdapter extends JobSourceAdapter {
         },
       );
 
-      console.log(`Got status ${searchRes.status}, loading HTML...`);
+      console.log(`[hh] Got status ${searchRes.status}, loading HTML...`);
       const searchHtml = await searchRes.text();
       const searchCheerio = cheerio.load(searchHtml);
       const searchJson = searchCheerio('#HH-Lux-InitialState').html();
 
-      console.log(`Extracting vacancyIds from search results...`);
+      console.log(`[hh] Extracting vacancyIds from search results...`);
       const vacancyIdRegex = /"vacancyId":\s*(\d+)/g;
       if (searchJson) {
         let match;
@@ -86,11 +86,12 @@ export class HhAdapter extends JobSourceAdapter {
         }
       }
 
+      setTimeout(() => {}, 3000); // add delay between page requests to avoid rate limiting
       page++;
     }
 
     for (const id of vacancyIds) {
-      console.log(`Fetching job details for vacancy ID ${id}...`);
+      console.log(`[hh] Fetching job details for vacancy ID ${id}...`);
       const jobRes = await fetch(`https://m.hh.ru/vacancy/${id}`, {
         headers: this.fetchHeaders,
       });
@@ -149,26 +150,27 @@ export class HhAdapter extends JobSourceAdapter {
         postedAt,
       };
 
-      console.log(`Extracted job: ${rawJob.title} at ${rawJob.companyName}`);
+      console.log(`[hh] Extracted job: ${rawJob.title} at ${rawJob.companyName}`);
       if (!rawJob.title || !rawJob.companyName) {
-        console.warn(`Skipping job with missing title or company name. Vacancy ID: ${id}`);
+        console.warn(`[hh] Skipping job with missing title or company name. Vacancy ID: ${id}`);
+        setTimeout(() => {}, 1000); // add delay before continuing to avoid rapid logging
         continue;
       }
       resultJobs.push(rawJob);
     }
 
-    console.log(`Finished fetching HH jobs. Total jobs fetched: ${resultJobs.length}`);
+    console.log(`[hh] Finished fetching jobs. Total jobs fetched: ${resultJobs.length}`);
     return resultJobs;
   }
 
   normalize(raw: RawJob): typeof jobs.$inferInsert {
     return {
-      source: 'hh',
       externalId: raw.id,
+      source: 'hh',
       title: raw.title,
-      experience: raw.experience,
-      location: raw.location,
       companyName: raw.companyName,
+      location: raw.location,
+      experience: raw.experience,
       workFormat: this.mapWorkFormat(raw.workFormat),
       salaryFrom: raw.salaryFrom,
       salaryTo: raw.salaryTo,
