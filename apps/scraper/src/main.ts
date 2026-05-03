@@ -1,6 +1,7 @@
 import { db, jobs } from '@career-ai/db';
 import { HhAdapter } from './adapters/HhAdapter';
 import { cron } from 'bun';
+import { vectorizeJobQueue } from '@career-ai/queue';
 
 const hhAdapter = new HhAdapter();
 
@@ -13,7 +14,7 @@ cron('0 0 * * *', async () => {
       `hh scraping flow completed. Total unique jobs fetched: ${normalizedJobs.length}`,
     );
     console.log(`Inserting ${normalizedJobs.length} jobs into the database...`);
-    await db
+    const insertedJobs = await db
       .insert(jobs)
       .values([...normalizedJobs.values()])
       .onConflictDoUpdate({
@@ -31,8 +32,19 @@ cron('0 0 * * *', async () => {
           skills: jobs.skills,
           fetchedAt: new Date(),
         },
-      });
+      })
+      .returning({ id: jobs.id });
     console.log('hh Jobs inserted/updated successfully');
+
+    console.log('Adding vectorization jobs to the queue...');
+    await vectorizeJobQueue.addBulk(
+      insertedJobs.map((job) => ({
+        name: 'vectorize-job',
+        data: { jobId: job.id },
+        options: { jobId: `vectorize-job-${job.id}` },
+      })),
+    );
+    console.log('Vectorization jobs added to the queue successfully');
   } catch (error) {
     console.error('Error during HH scraping flow:', error);
   } finally {
