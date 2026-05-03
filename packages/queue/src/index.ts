@@ -13,7 +13,10 @@ export type VectorizeJobPayload = JobId;
 export type VectorizeCvPayload = CvId;
 export type MatchCvToJobPayload = CvId;
 export type MatchJobToCvsPayload = JobId;
-export type MatchGenerationPayload = JobId & CvId;
+export type MatchGenerationPayload = JobId &
+  CvId & {
+    similarity: number;
+  };
 
 export const connectionOptions: ConnectionOptions = {
   host: process.env.REDIS_HOST,

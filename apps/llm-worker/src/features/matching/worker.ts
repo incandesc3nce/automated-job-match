@@ -10,7 +10,7 @@ import { buildMatchPrompt, SYSTEM_PROMPT } from './buildInput';
 import { matchSchema } from './types/Match';
 
 const handleMatchGenerationJob = async (job: Job<MatchGenerationPayload>) => {
-  const { cvId, jobId } = job.data;
+  const { cvId, jobId, similarity } = job.data;
   await job.updateProgress(10);
 
   const [cvRow] = await db.select().from(cvs).where(eq(cvs.id, cvId));
@@ -39,6 +39,7 @@ const handleMatchGenerationJob = async (job: Job<MatchGenerationPayload>) => {
     jobId,
     score,
     reasoning,
+    similarity,
   });
   await job.updateProgress(100);
 };

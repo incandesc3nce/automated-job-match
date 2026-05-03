@@ -1,4 +1,6 @@
-import { startMatchingWorker } from './features/matching/worker';
+import { startMatchingCvToJobsWorker } from './features/matching/cv/worker';
+import { startMatchingJobToCvsWorker } from './features/matching/job/worker';
+import { startMatchGenerationWorker } from './features/matching/worker';
 import { startShortenDescriptionWorker } from './features/shortenDescription/worker';
 import { startVectorizeCvWorker } from './features/vectorizeCv/worker';
 import { startVectorizeJobWorker } from './features/vectorizeJob/worker';
@@ -17,7 +19,9 @@ async function main() {
     startShortenDescriptionWorker(),
     startVectorizeJobWorker(),
     startVectorizeCvWorker(),
-    startMatchingWorker(),
+    startMatchingCvToJobsWorker(),
+    startMatchingJobToCvsWorker(),
+    startMatchGenerationWorker(),
   ];
 
   process.on('SIGTERM', async () => {

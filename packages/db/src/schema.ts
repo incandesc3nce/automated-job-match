@@ -10,6 +10,7 @@ import {
   text,
   vector,
   index,
+  real,
 } from 'drizzle-orm/pg-core';
 
 const id = uuid('id').defaultRandom().primaryKey();
@@ -112,6 +113,7 @@ export const matches = pgTable('matches', {
     .references(() => jobs.id),
   score: integer('score').notNull(),
   reasoning: text('reasoning').notNull(),
+  similarity: real('similarity').notNull(),
   hidden: boolean('hidden').default(false).notNull(),
   createdAt: createdAt,
   updatedAt: updatedAt,
