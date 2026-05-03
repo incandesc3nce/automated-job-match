@@ -7,6 +7,8 @@ import {
   integer,
   boolean,
   uniqueIndex,
+  text,
+  vector,
 } from 'drizzle-orm/pg-core';
 
 const id = uuid('id').defaultRandom().primaryKey();
@@ -71,11 +73,12 @@ export const jobs = pgTable(
     salaryFrom: varchar('salary_from', { length: 50 }),
     salaryTo: varchar('salary_to', { length: 50 }),
     salaryExtra: varchar('salary_extra', { length: 255 }),
-    description: varchar('description', { length: 5000 }).notNull(),
+    description: text('description').notNull(),
+    shortDescription: text('short_description'),
+    embeddings: vector('embeddings', { dimensions: 1536 }),
     skills: varchar('skills', { length: 255 }).array().notNull(),
     postedAt: timestamp('posted_at'),
     fetchedAt: timestamp('fetched_at').defaultNow().notNull(),
-    createdAt: createdAt,
     embeddingStatus: varchar('embedding_status', {
       length: 20,
       enum: ['pending', 'completed', 'failed'],
@@ -89,7 +92,29 @@ export const jobs = pgTable(
   ],
 );
 
-// TODO: add fields
+// TODO: review field if needed
 export const matches = pgTable('matches', {
   id: id,
+  cvId: uuid('cv_id')
+    .notNull()
+    .references(() => cvs.id),
+  jobId: uuid('job_id')
+    .notNull()
+    .references(() => jobs.id),
+  score: integer('score').notNull(),
+  reasoning: text('reasoning').notNull(),
+  hidden: boolean('hidden').default(false).notNull(),
+  createdAt: createdAt,
+  updatedAt: updatedAt,
 });
+
+export const matchesRelations = relations(matches, ({ one }) => ({
+  cv: one(cvs, {
+    fields: [matches.cvId],
+    references: [cvs.id],
+  }),
+  job: one(jobs, {
+    fields: [matches.jobId],
+    references: [jobs.id],
+  }),
+}));
