@@ -9,6 +9,7 @@ import {
   uniqueIndex,
   text,
   vector,
+  index,
 } from 'drizzle-orm/pg-core';
 
 const id = uuid('id').defaultRandom().primaryKey();
@@ -37,20 +38,26 @@ export const usersRelations = relations(users, ({ many }) => ({
 }));
 
 // TODO: add fields
-export const cvs = pgTable('cvs', {
-  id: id,
-  userId: uuid('user_id')
-    .notNull()
-    .references(() => users.id),
-  title: varchar('title', { length: 255 }).notNull(),
-  location: varchar('location', { length: 255 }).notNull(),
-  experienceMonths: integer('experience_months').notNull(),
-  skills: varchar('skills', { length: 100 }).array().notNull(),
-  workFormat: workFormat.notNull(),
-  embeddings: vector('embeddings', { dimensions: 1536 }),
-  createdAt: createdAt,
-  updatedAt: updatedAt,
-});
+export const cvs = pgTable(
+  'cvs',
+  {
+    id: id,
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id),
+    title: varchar('title', { length: 255 }).notNull(),
+    location: varchar('location', { length: 255 }).notNull(),
+    experienceMonths: integer('experience_months').notNull(),
+    skills: varchar('skills', { length: 100 }).array().notNull(),
+    workFormat: workFormat.notNull(),
+    embeddings: vector('embeddings', { dimensions: 1024 }),
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+  },
+  (table) => [
+    index('idx_cvs_embeddings').using('hnsw', table.embeddings.op('vector_cosine_ops')),
+  ],
+);
 
 export const cvsRelations = relations(cvs, ({ one }) => ({
   user: one(users, {
@@ -76,7 +83,7 @@ export const jobs = pgTable(
     salaryExtra: varchar('salary_extra', { length: 255 }),
     description: text('description').notNull(),
     shortDescription: text('short_description'),
-    embeddings: vector('embeddings', { dimensions: 1536 }),
+    embeddings: vector('embeddings', { dimensions: 1024 }),
     skills: varchar('skills', { length: 255 }).array().notNull(),
     postedAt: timestamp('posted_at'),
     fetchedAt: timestamp('fetched_at').defaultNow().notNull(),
@@ -90,6 +97,7 @@ export const jobs = pgTable(
   },
   (table) => [
     uniqueIndex('unique_external_id_per_source').on(table.source, table.externalId),
+    index('idx_jobs_embeddings').using('hnsw', table.embeddings.op('vector_cosine_ops')),
   ],
 );
 

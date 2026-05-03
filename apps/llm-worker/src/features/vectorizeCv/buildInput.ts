@@ -1,6 +1,6 @@
 import { cvs } from '@career-ai/db';
 
-export const buildVectorizeJobInput = (cv: typeof cvs.$inferSelect): string => {
+export const buildVectorizeCvInput = (cv: typeof cvs.$inferSelect): string => {
   const parts: string[] = [];
 
   const experienceYears = Math.floor(cv.experienceMonths / 12);
@@ -31,7 +31,7 @@ export const buildVectorizeJobInput = (cv: typeof cvs.$inferSelect): string => {
 
   parts.push(`location: ${cv.location}`);
   parts.push(`work format: ${cv.workFormat}`);
-  parts.push(`experience: ${experienceYears} лет`);
+  parts.push(`experience: ${experience}`);
 
   return parts.join('\n');
 };

@@ -1,4 +1,4 @@
-import { db, eq, jobs } from '@career-ai/db';
+import { db, eq, jobs, sql } from '@career-ai/db';
 import {
   Worker,
   Job,
@@ -24,7 +24,13 @@ const handleVectorizeJob = async (job: Job<VectorizeJobPayload>) => {
   const vector = await llm.embed(input);
   await job.updateProgress(80);
 
-  await db.update(jobs).set({ embeddings: vector }).where(eq(jobs.id, jobId));
+  await db
+    .update(jobs)
+    .set({
+      embeddings: vector,
+      embeddingStatus: 'completed',
+    })
+    .where(eq(jobs.id, jobId));
   await job.updateProgress(100);
 };
 
@@ -34,7 +40,7 @@ export const startVectorizeJobWorker = () => {
   });
 
   worker.on('failed', (job, err) => {
-    console.error(`[VectorizeJob] Job failed: ${job?.data.jobId}, Error: ${err.message}`);
+    console.error(`[VectorizeJob] Job failed: ${job?.data.jobId}`, err);
   });
 
   worker.on('completed', (job) => {

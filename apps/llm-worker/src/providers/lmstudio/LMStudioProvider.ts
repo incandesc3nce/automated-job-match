@@ -53,9 +53,11 @@ export class LMStudioProvider implements LLMProvider {
     }
 
     const json = (await res.json()) as LMStudioEmbedResponse;
-    const flatEmbeddings = json.data.flatMap((d) => d.embedding);
+    if (!json.data || json.data.length === 0) {
+      throw new Error('LMStudioProvider embed failed: no embedding returned');
+    }
 
-    return flatEmbeddings;
+    return json.data[0]?.embedding as number[];
   }
 
   async healthCheck() {
