@@ -1,9 +1,10 @@
 import * as cheerio from 'cheerio';
-import { jobs } from '@career-ai/db';
+import { db, jobs } from '@career-ai/db';
 import { JobSourceAdapter } from './JobSourceAdapter';
 import type { RawJob } from '@/types/RawJob';
 import { workFormatMap } from '@/utils/workFormatMap';
 import { sleep } from '@/utils/sleep';
+import { shortenDescriptionQueue } from '@career-ai/queue';
 
 export class HhAdapter extends JobSourceAdapter {
   selectors = {
@@ -18,6 +19,8 @@ export class HhAdapter extends JobSourceAdapter {
     skills: '[data-qa="skills-element"]',
     postedAt: 'div:contains("Вакансия опубликована")',
   };
+
+  count = 0;
 
   private extractSalary(salaryText: string) {
     let from = null;
@@ -59,7 +62,6 @@ export class HhAdapter extends JobSourceAdapter {
   async fetchJobs() {
     let page = 0;
     const vacancyIds: string[] = [];
-    const resultJobs: RawJob[] = [];
 
     // TODO: change length or dynamically determine how many jobs to fetch based on how many are already in the database
     while (vacancyIds.length < 100) {
@@ -160,11 +162,23 @@ export class HhAdapter extends JobSourceAdapter {
         // TODO: retry failed job fetch
         continue;
       }
-      resultJobs.push(rawJob);
+
+      try {
+        const normalizedJob = this.normalize(rawJob);
+        console.log(
+          `[hh] Normalized job: ${normalizedJob.title} at ${normalizedJob.companyName}`,
+        );
+        const insertedJob = await this.insertJob(normalizedJob, id);
+        await this.enqueueShortenDescriptionJob(insertedJob.id);
+      } catch (error) {
+        console.error(
+          `Error inserting/updating job in database for vacancy ID ${id}:`,
+          error,
+        );
+      }
     }
 
-    console.log(`[hh] Finished fetching jobs. Total jobs fetched: ${resultJobs.length}`);
-    return resultJobs;
+    console.log(`[hh] Finished fetching jobs. Total jobs fetched: ${this.count}`);
   }
 
   normalize(raw: RawJob): typeof jobs.$inferInsert {
@@ -186,15 +200,47 @@ export class HhAdapter extends JobSourceAdapter {
     };
   }
 
-  async flow() {
-    const rawJobs = await this.fetchJobs();
-    const normalizedJobs = rawJobs.map((job) => this.normalize(job));
-    const dedupedJobsMap = new Map<string, ReturnType<typeof this.normalize>>();
-    for (const job of normalizedJobs) {
-      const key = `${job.source}-${job.externalId}`;
-      dedupedJobsMap.set(key, job);
+  async insertJob(normalizedJob: typeof jobs.$inferInsert, vacancyId: string) {
+    const [insertedJob] = await db
+      .insert(jobs)
+      .values(normalizedJob)
+      .onConflictDoUpdate({
+        target: [jobs.source, jobs.externalId],
+        set: {
+          title: jobs.title,
+          companyName: jobs.companyName,
+          location: jobs.location,
+          experience: jobs.experience,
+          workFormat: jobs.workFormat,
+          salaryFrom: jobs.salaryFrom,
+          salaryTo: jobs.salaryTo,
+          salaryExtra: jobs.salaryExtra,
+          description: jobs.description,
+          skills: jobs.skills,
+          fetchedAt: jobs.fetchedAt,
+        },
+      })
+      .returning({ id: jobs.id, title: jobs.title });
+
+    if (!insertedJob) {
+      throw new Error(
+        `Failed to insert/update job in database for vacancy ID ${vacancyId}. No job returned after upsert.`,
+      );
     }
 
-    return [...dedupedJobsMap.values()];
+    this.count++;
+    console.log(
+      `[hh] Inserted/updated job in database with ID ${insertedJob.id}. Total jobs processed: ${this.count}`,
+    );
+
+    return insertedJob;
+  }
+
+  async enqueueShortenDescriptionJob(jobId: string) {
+    return await shortenDescriptionQueue.add(
+      'shorten-description',
+      { jobId: jobId },
+      { jobId: `shorten-job-${jobId}` },
+    );
   }
 }

@@ -1,4 +1,5 @@
 import type { RawJob } from '@/types/RawJob';
+import type { jobs } from '@career-ai/db';
 
 export abstract class JobSourceAdapter {
   protected fetchHeaders = {
@@ -9,6 +10,6 @@ export abstract class JobSourceAdapter {
     'Accept-Encoding': 'gzip, deflate, br',
   };
 
-  abstract fetchJobs(): Promise<RawJob[]>;
-  abstract normalize(raw: RawJob): unknown;
+  abstract fetchJobs(): Promise<void>;
+  abstract normalize(raw: RawJob): typeof jobs.$inferInsert;
 }
