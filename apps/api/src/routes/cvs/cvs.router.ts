@@ -54,11 +54,12 @@ cvsRouter.get('/:cvId/matches', async (c) => {
       jobSalaryTo: jobs.salaryTo,
       jobSalaryExtra: jobs.salaryExtra,
       jobSkills: jobs.skills,
+      jobPostedAt: jobs.postedAt,
     })
     .from(matches)
     .leftJoin(jobs, eq(matches.jobId, jobs.id))
     .where(and(eq(matches.cvId, cvId), eq(matches.userId, c.get('userId'))))
-    .orderBy(desc(matches.createdAt), desc(matches.score))
+    .orderBy(desc(matches.score), desc(matches.createdAt))
     .limit(limit)
     .offset(offset);
 
@@ -150,6 +151,8 @@ cvsRouter.delete('/:cvId', async (c) => {
   if (!deletedCv) {
     throw new NotFoundError('CV not found');
   }
+
+  await db.delete(matches).where(eq(matches.cvId, cvId));
 
   return c.json({ success: true });
 });
