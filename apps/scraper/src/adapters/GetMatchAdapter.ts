@@ -31,9 +31,9 @@ export class GetMatchAdapter extends JobSourceAdapter {
 
   async fetchJobs() {
     let page = 1;
-    const rawJobs: RawJob[] = [];
+    let count = 0;
 
-    while (rawJobs.length < 300) {
+    while (count < 250) {
       const searchParams = new URLSearchParams({
         sa: 'any',
         p: String(page),
@@ -124,6 +124,7 @@ export class GetMatchAdapter extends JobSourceAdapter {
             { jobId: insertedJob.id },
             { jobId: `shorten-job-${insertedJob.id}` },
           );
+          count++;
         } catch (error) {
           console.error(
             `[getmatch] Error inserting/updating job in database for offer ID ${offer.id}:`,
@@ -131,6 +132,7 @@ export class GetMatchAdapter extends JobSourceAdapter {
           );
         }
       }
+      page++;
     }
   }
 
@@ -178,7 +180,7 @@ export class GetMatchAdapter extends JobSourceAdapter {
       companyName: raw.companyName,
       location: raw.location,
       experience: raw.experience,
-      workFormat: [workFormatMap[raw.workFormat] || 'remote'],
+      workFormat: [this.formatMap[raw.workFormat] || 'remote'],
       salaryFrom: raw.salaryFrom,
       salaryTo: raw.salaryTo,
       salaryExtra: raw.salaryExtra,
