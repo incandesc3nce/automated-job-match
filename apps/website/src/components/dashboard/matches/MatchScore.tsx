@@ -10,10 +10,10 @@ type MatchScoreProps = {
 export const MatchScore = ({ score, reasoning }: MatchScoreProps) => {
   let { textColor, bgColor } = { textColor: '', bgColor: '' };
 
-  if (score >= 80) {
+  if (score >= 75) {
     textColor = 'text-green-700 dark:text-green-300';
     bgColor = 'bg-green-100 dark:bg-green-700/30';
-  } else if (score >= 60) {
+  } else if (score >= 50) {
     textColor = 'text-yellow-700 dark:text-yellow-300';
     bgColor = 'bg-yellow-100 dark:bg-yellow-700/30';
   } else {
