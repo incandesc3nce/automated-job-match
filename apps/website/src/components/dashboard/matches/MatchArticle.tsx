@@ -22,7 +22,7 @@ export const MatchArticle = ({ match }: MatchArticleProps) => {
   const [isRevealedDesc, setIsRevealedDesc] = useState(false);
 
   return (
-    <article className="flex flex-col border p-4 rounded-md">
+    <article className="flex flex-col border p-4 rounded-md bg-mist-50 dark:bg-mist-900">
       <div className="space-y-2">
         <Link
           href={match.externalUrl}
@@ -75,6 +75,17 @@ export const MatchArticle = ({ match }: MatchArticleProps) => {
             </div>
           </div>
         )}
+      </div>
+
+      <div>
+        <Typography tag="span" className="font-semibold">
+          Опубликовано:
+        </Typography>{' '}
+        {new Date(match.jobPostedAt).toLocaleDateString('ru-RU', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        })}
       </div>
 
       <div className="flex items-center justify-between gap-4 mt-4">

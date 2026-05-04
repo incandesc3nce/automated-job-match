@@ -14,6 +14,7 @@ export type Match = {
   jobSkills: string[];
   jobSource: string;
   jobWorkFormat: string[];
+  jobPostedAt: Date;
 
   createdAt: Date;
   updatedAt: Date;
