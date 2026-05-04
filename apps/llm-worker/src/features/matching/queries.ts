@@ -22,7 +22,7 @@ export const findTopJobsForCv = async (cvId: string, limit = LIMIT) => {
   const topMatches = await db
     .select({ jobId: jobs.id, similarity })
     .from(jobs)
-    .where(gt(similarity, 0.5))
+    .where(gt(similarity, 0.75))
     .orderBy((t) => desc(t.similarity))
     .limit(limit);
 
@@ -49,7 +49,7 @@ export const findTopCvsForJob = async (jobId: string, limit = LIMIT) => {
   const topMatches = await db
     .select({ cvId: cvs.id, similarity })
     .from(cvs)
-    .where(gt(similarity, 0.5))
+    .where(gt(similarity, 0.75))
     .orderBy((t) => desc(t.similarity))
     .limit(limit);
 
