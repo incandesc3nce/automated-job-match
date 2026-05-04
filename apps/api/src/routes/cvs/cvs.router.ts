@@ -138,6 +138,8 @@ cvsRouter.patch('/:cvId', updateCvValidator, async (c) => {
     cvId: updatedCv.id,
   });
 
+  await db.delete(matches).where(eq(matches.cvId, cvId));
+
   return c.json(updatedCv);
 });
 
