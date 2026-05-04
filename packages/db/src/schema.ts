@@ -22,7 +22,7 @@ const updatedAt = timestamp('updated_at')
 
 const workFormat = varchar('work_format', {
   length: 20,
-  enum: ['any', 'remote', 'hybrid', 'onsite', 'traveling'],
+  enum: ['any', 'remote', 'hybrid', 'onsite', 'traveling', 'relocation_company'],
 });
 
 export const users = pgTable('users', {
