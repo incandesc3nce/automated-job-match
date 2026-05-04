@@ -17,6 +17,7 @@ COPY packages/queue ./packages/queue
 
 FROM base AS release
 COPY --from=prerelease /app ./
+ENV NODE_ENV=production
 
 USER bun
 EXPOSE 5000/tcp
