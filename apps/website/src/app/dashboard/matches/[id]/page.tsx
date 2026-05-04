@@ -1,12 +1,4 @@
-import { DashboardHeader } from '@/components/common/DashboardHeader';
 import { MatchArticle } from '@/components/dashboard/matches/MatchArticle';
-import {
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { SidebarInset } from '@/components/ui/sidebar';
 import { Typography } from '@/components/ui/typography';
 import { MatchesResponse } from '@/types/dashboard/matches/Match';
 import { ServerAPIFetch } from '@/utils/ServerAPIFetch';
@@ -20,16 +12,7 @@ export default async function MatchesPage({
   const matchesRes = await ServerAPIFetch<MatchesResponse>(`/api/v1/cvs/${id}/matches`);
 
   return (
-    <SidebarInset>
-      <DashboardHeader>
-        <BreadcrumbItem className="hidden md:block">
-          <BreadcrumbLink href="/dashboard">Дэшборд</BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator className="hidden md:block" />
-        <BreadcrumbItem>
-          <BreadcrumbPage>Подборки</BreadcrumbPage>
-        </BreadcrumbItem>
-      </DashboardHeader>
+    <div>
       <div className="px-4 my-2">
         <Typography tag="h2">Подборки вакансий</Typography>
       </div>
@@ -40,6 +23,6 @@ export default async function MatchesPage({
             <MatchArticle key={match.id} match={match} />
           ))}
       </div>
-    </SidebarInset>
+    </div>
   );
 }
