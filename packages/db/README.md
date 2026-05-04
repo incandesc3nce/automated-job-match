@@ -1,3 +1,49 @@
 # db
 
-Package for database access using Drizzle ORM with PostgreSQL. This package defines the database schema and provides a connection to the database. It is used by other packages to perform database operations.
+Библиотека и что-то вроде микросервиса для работы с базой данных PostgreSQL через Drizzle ORM. Тут можно объявить схему для таблицы в PostgreSQL, мигрировать БД и работать с БД напрямую через Drizzle Studio.
+
+## Установка
+
+Библиотеку можно установить добавлением её в зависимости вашего проекта:
+
+```json
+{
+  "dependencies": {
+    "@career-ai/db": "workspace:*"
+  }
+}
+```
+
+Затем нужно установить эту зависимость:
+
+```bash
+bun install
+```
+
+После этого, при изменениях в библиотеке, изменения будут автоматически отражаться в использующих её сервисах.
+
+Если сервис использует `@career-ai/db`, то в переменные окружения `.env` нужно добавить следующие переменные:
+
+```env
+DB_URL=postgresql://user:password@url:port/database_name
+```
+
+Для работы с БД из папки с библиотекой `db`, нужно создать файл `.env` и добавить в него переменную `DB_URL` с URL PostgreSQL.
+
+````env
+
+## Использование
+
+После изменений в схеме БД, нужно применить их к БД:
+
+```bash
+bun run db:push
+````
+
+Для работы с БД напрямую через Drizzle Studio, нужно запустить её:
+
+```bash
+bun run db:studio
+```
+
+После этого, Drizzle Studio будет доступна по адресу `https://local.drizzle.studio`, и вы сможете подключиться к вашей БД, используя URL из переменной окружения `DB_URL`.

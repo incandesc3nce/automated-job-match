@@ -1,3 +1,30 @@
 # auth
 
-Package for handling authentication logic, including password hashing and JWT management. It uses the `argon2` library for secure password hashing and `jsonwebtoken` for generating and verifying JWTs. This package is used by the API to authenticate users and protect routes.
+Библиотека для работы с аутентификацией в приложении. Она включает в себя хэширование паролей с помощью `argon2` и управление JWT токенами через `jsonwebtoken`. Эта библиотека преимущественно используется в сервисе `api` для защиты эндпоинтов и управления сессиями пользователей.
+
+## Установка
+
+Библиотеку можно установить добавлением её в зависимости вашего проекта:
+
+```json
+{
+  "dependencies": {
+    "@career-ai/auth": "workspace:*"
+  }
+}
+```
+
+Затем нужно установить эту зависимость:
+
+```bash
+bun install
+```
+
+После этого, при изменениях в библиотеке, изменения будут автоматически отражаться в использующих её сервисах.
+
+Если сервис использует `@career-ai/auth`, то в переменные окружения `.env` нужно добавить следующие переменные:
+
+```env
+JWT_SECRET=your_jwt_secret_key
+HASH_SECRET=your_hash_secret_key
+```
