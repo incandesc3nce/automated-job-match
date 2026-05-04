@@ -40,3 +40,12 @@ services:
       dockerfile: apps/llm-worker/Dockerfile
     env_file:
       - ./docker/env/llm-worker.env
+
+  website:
+    build:
+      context: .
+      dockerfile: apps/website/Dockerfile
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./docker/env/website.env
