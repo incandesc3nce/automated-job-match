@@ -8,6 +8,7 @@ import {
 } from '@career-ai/queue';
 import { buildMatchPrompt, SYSTEM_PROMPT } from './buildInput';
 import { matchSchema } from './types/Match';
+import { redisClient } from '@career-ai/redis';
 
 const handleMatchGenerationJob = async (job: Job<MatchGenerationPayload>) => {
   const { cvId, jobId, similarity } = job.data;
@@ -36,16 +37,30 @@ const handleMatchGenerationJob = async (job: Job<MatchGenerationPayload>) => {
   );
   await job.updateProgress(80);
 
-  await db.insert(matches).values({
-    cvId,
-    userId: cvRow.userId,
-    jobId,
-    score,
-    reasoning,
-    matchedSkills,
-    missingSkills,
-    similarity,
-  });
+  const [insertedMatch] = await db
+    .insert(matches)
+    .values({
+      cvId,
+      userId: cvRow.userId,
+      jobId,
+      score,
+      reasoning,
+      matchedSkills,
+      missingSkills,
+      similarity,
+    })
+    .returning();
+
+  if (!insertedMatch) {
+    throw new Error('Failed to insert match into database');
+  }
+  await job.updateProgress(90);
+
+  // Publish a message to Redis to notify that the match is ready
+  await redisClient.publish(
+    `matches:ready:${insertedMatch.userId}`,
+    JSON.stringify({ matchId: insertedMatch.id, cvId: insertedMatch.cvId }),
+  );
   await job.updateProgress(100);
 };
 

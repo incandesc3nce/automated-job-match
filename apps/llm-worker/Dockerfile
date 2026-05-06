@@ -4,6 +4,7 @@ WORKDIR /app
 FROM base AS prerelease
 COPY package.json bun.lock ./
 COPY packages/db/package.json ./packages/db/
+COPY packages/redis/package.json ./packages/redis/
 COPY packages/queue/package.json ./packages/queue/
 COPY apps/llm-worker/package.json ./apps/llm-worker/
 
@@ -11,6 +12,7 @@ RUN bun install --filter 'llm-worker'
 
 COPY apps/llm-worker ./apps/llm-worker
 COPY packages/db ./packages/db
+COPY packages/redis ./packages/redis
 COPY packages/queue ./packages/queue
 
 FROM base AS release
