@@ -2,9 +2,8 @@ import type { RawJob } from '@/types/RawJob';
 import { JobSourceAdapter } from './JobSourceAdapter';
 import { db, jobs } from '@career-ai/db';
 import type { GetMatchOfferDetails, GetMatchPageRes } from '@/types/getmatch';
-import { sleep } from '@/utils/sleep';
+import { sleep } from 'bun';
 import * as cheerio from 'cheerio';
-import { workFormatMap } from '@/utils/workFormatMap';
 import { shortenDescriptionQueue } from '@career-ai/queue';
 
 export class GetMatchAdapter extends JobSourceAdapter {
@@ -63,7 +62,7 @@ export class GetMatchAdapter extends JobSourceAdapter {
       } catch (error) {
         console.error(`[getmatch] Error fetching jobs from page ${page}:`, error);
         console.log(`[getmatch] Waiting for 10 seconds before retrying...`);
-        await sleep(10);
+        await sleep(10000);
         continue;
       }
 
@@ -94,7 +93,7 @@ export class GetMatchAdapter extends JobSourceAdapter {
             error,
           );
           console.log(`[getmatch] Waiting for 10 seconds before retrying...`);
-          await sleep(10);
+          await sleep(10000);
           i = i - 1; // retry the same offer
           continue;
         }

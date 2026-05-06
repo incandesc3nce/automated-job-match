@@ -2,8 +2,7 @@ import * as cheerio from 'cheerio';
 import { db, jobs } from '@career-ai/db';
 import { JobSourceAdapter } from './JobSourceAdapter';
 import type { RawJob } from '@/types/RawJob';
-import { workFormatMap } from '@/utils/workFormatMap';
-import { sleep } from '@/utils/sleep';
+import { sleep } from 'bun';
 import { shortenDescriptionQueue } from '@career-ai/queue';
 
 export class HhAdapter extends JobSourceAdapter {
@@ -21,6 +20,13 @@ export class HhAdapter extends JobSourceAdapter {
   };
 
   count = 0;
+
+  private workFormatMap: Record<string, (typeof jobs.$inferInsert.workFormat)[number]> = {
+    удалённо: 'remote',
+    гибрид: 'hybrid',
+    'на месте работодателя': 'onsite',
+    разъездной: 'traveling',
+  } as const;
 
   private extractSalary(salaryText: string) {
     let from = null;
@@ -56,7 +62,7 @@ export class HhAdapter extends JobSourceAdapter {
       .replace('или', ',')
       .split(',')
       .map((f) => f.trim());
-    return formats.map((format) => workFormatMap[format] || 'any');
+    return formats.map((format) => this.workFormatMap[format] || 'any');
   }
 
   async fetchJobs() {
@@ -158,7 +164,7 @@ export class HhAdapter extends JobSourceAdapter {
         console.warn(
           `[hh] Skipping job with missing title or company name. Vacancy ID: ${id}`,
         );
-        await sleep(10); // add delay before next request
+        await sleep(10000); // add delay before next request
         // TODO: retry failed job fetch
         continue;
       }
