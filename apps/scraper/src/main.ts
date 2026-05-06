@@ -27,3 +27,9 @@ console.log('Scraper service started. Waiting for scheduled tasks...');
 cron('0 0 * * *', async () => {
   await startFlows();
 });
+
+// Run immediately on startup in prod
+if (process.env.NODE_ENV === 'production') {
+  console.log('Running scraping flows immediately on startup...');
+  startFlows();
+}
