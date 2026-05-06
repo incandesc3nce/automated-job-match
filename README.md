@@ -1,5 +1,8 @@
 # Automated Job Match
 
+<img width="1848" height="936" alt="image" src="https://github.com/user-attachments/assets/d9b45093-d3bf-46cb-9204-610db5776037" />
+<img width="1844" height="950" alt="image" src="https://github.com/user-attachments/assets/79c369ea-45ae-4c51-81b4-7ed0b6542599" />
+
 Данный проект представляет собой автоматизированную систему подбора вакансий с использованием LLM и NLP. Система позволяет создать свое резюме и получить подборку актуальных вакансий, соответствующих вашему профилю.
 
 ## Функциональность
