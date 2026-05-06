@@ -18,7 +18,7 @@ export async function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <Typography tag="h1" className="text-lg font-semibold">
+      <Typography tag="h2" className="text-2xl text-center font-semibold">
           <Typography tag="span" accent>
             Career
           </Typography>{' '}
