@@ -1,4 +1,4 @@
-import { MatchArticle } from '@/components/dashboard/matches/MatchArticle';
+import { MatchesGrid } from '@/components/dashboard/matches/MatchesGrid';
 import { Typography } from '@/components/ui/typography';
 import { MatchesResponse } from '@/types/dashboard/matches/Match';
 import { ServerAPIFetch } from '@/utils/ServerAPIFetch';
@@ -16,13 +16,14 @@ export default async function MatchesPage({
       <div className="px-4 my-2">
         <Typography tag="h2">Подборки вакансий</Typography>
       </div>
-      <div className="px-4 my-2 items-start grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {matchesRes.success &&
-          matchesRes.data.matches.length > 0 &&
-          matchesRes.data.matches.map((match) => (
-            <MatchArticle key={match.id} match={match} />
-          ))}
-      </div>
+      {matchesRes.success && (
+        <MatchesGrid
+          cvId={id}
+          matches={matchesRes.data.matches}
+          hiddenMatches={matchesRes.data.hiddenMatches}
+          total={matchesRes.data.total}
+        />
+      )}
     </div>
   );
 }

@@ -11,7 +11,17 @@ import matchesRouter from './routes/matches/matches.router';
 
 const app = new Hono();
 
-app.use(cors()).use(csrf()).use(logger());
+app
+  .use(
+    cors({
+      origin: 'http://localhost:3000',
+      allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+      credentials: true,
+    }),
+  )
+  .use(csrf())
+  .use(logger());
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
     if (err.res) {

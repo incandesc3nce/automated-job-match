@@ -5,6 +5,8 @@ import { createCvValidator, updateCvValidator } from './cvs.validator';
 import { BadRequestError, NotFoundError } from '@/utils/APIError';
 import { vectorizeCvQueue } from '@career-ai/queue';
 import { jobSourceLinkMap } from '@/utils/jobSourceLinkMap';
+import { streamSSE } from 'hono/streaming';
+import { redisClient } from '@career-ai/redis';
 
 const cvsRouter = new Hono().use('*', auth);
 
@@ -82,6 +84,43 @@ cvsRouter.get('/:cvId/matches', async (c) => {
       })),
     hiddenMatches: matchesRows.filter((match) => match.hidden),
     total: total?.count || 0,
+  });
+});
+
+cvsRouter.get('/:cvId/matches/sse', async (c) => {
+  const userId = c.get('userId');
+  const key = `matches:ready:${userId}`;
+
+  return streamSSE(c, async (stream) => {
+    const redis = await redisClient.duplicate();
+
+    const heartbeat = setInterval(async () => {
+      await stream.writeSSE({
+        event: 'heartbeat',
+        data: String(Date.now()),
+      });
+    }, 30_000);
+
+    await redis.subscribe(key, async (message, channel) => {
+      if (channel === key) {
+        const payload: { matchId: string; cvId: string } = JSON.parse(message);
+
+        await stream.writeSSE({
+          event: 'matchesReady',
+          data: JSON.stringify({
+            cvId: payload.cvId,
+          }),
+        });
+      }
+    });
+
+    stream.onAbort(async () => {
+      clearInterval(heartbeat);
+      await redis.unsubscribe(key);
+      redis.close();
+    });
+
+    await stream.sleep(5 * 60 * 1000);
   });
 });
 
