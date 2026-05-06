@@ -30,9 +30,13 @@ DB_URL=postgresql://user:password@url:port/database_name
 
 Для работы с БД из папки с библиотекой `db`, нужно создать файл `.env` и добавить в него переменную `DB_URL` с URL PostgreSQL.
 
-````env
-
 ## Использование
+
+Установите зависимости:
+
+```bash
+bun install
+```
 
 После изменений в схеме БД, нужно применить их к БД:
 
@@ -47,3 +51,9 @@ bun run db:studio
 ```
 
 После этого, Drizzle Studio будет доступна по адресу `https://local.drizzle.studio`, и вы сможете подключиться к вашей БД, используя URL из переменной окружения `DB_URL`.
+
+Так как по умолчанию расширение `pgvector` не установлено, нужно выполнить следующую SQL-команду в Drizzle Studio или psql:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+```
