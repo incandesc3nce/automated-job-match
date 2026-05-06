@@ -14,10 +14,19 @@ import { JwtPayload } from '@career-ai/auth';
 import { getCurrentSession } from '@/lib/getCurrentSession';
 import Link from 'next/link';
 import { NavUserTheme } from './NavUserTheme';
+import { ServerAPIFetch } from '@/utils/ServerAPIFetch';
 
 export const NavUser = async () => {
-  const user = (await getCurrentSession()) as JwtPayload;
-  const firstLetter = user.name.charAt(0).toUpperCase();
+  const user = await ServerAPIFetch<{
+    name: string;
+    email: string;
+  }>('/api/v1/users/me');
+
+  if (!user.success) {
+    return null;
+  }
+
+  const firstLetter = user.data?.name.charAt(0).toUpperCase();
 
   return (
     <SidebarMenu>
@@ -31,9 +40,9 @@ export const NavUser = async () => {
                 <AvatarFallback className="rounded-lg">{firstLetter}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{user.data.name}</span>
                 <span className="truncate text-xs text-muted-foreground">
-                  {user.email}
+                  {user.data.email}
                 </span>
               </div>
               <EllipsisVertical className="ml-auto size-4" />
@@ -50,9 +59,9 @@ export const NavUser = async () => {
                   <AvatarFallback className="rounded-lg">{firstLetter}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">{user.data.name}</span>
                   <span className="truncate text-xs text-muted-foreground">
-                    {user.email}
+                    {user.data.email}
                   </span>
                 </div>
               </div>
