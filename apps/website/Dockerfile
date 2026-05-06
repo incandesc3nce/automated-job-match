@@ -20,6 +20,11 @@ COPY apps/website ./apps/website
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+ARG API_BASE_PATH=http://api:5000
+ENV API_BASE_PATH=${API_BASE_PATH}
+ARG NEXT_PUBLIC_API_BASE_PATH=http://localhost:5000
+ENV NEXT_PUBLIC_API_BASE_PATH=${NEXT_PUBLIC_API_BASE_PATH}
+
 WORKDIR /app/apps/website
 RUN bun run build
 
