@@ -145,16 +145,19 @@ cvsRouter.patch('/:cvId', updateCvValidator, async (c) => {
 
 cvsRouter.delete('/:cvId', async (c) => {
   const cvId = c.req.param('cvId');
-  const [deletedCv] = await db
-    .delete(cvs)
-    .where(and(eq(cvs.id, cvId), eq(cvs.userId, c.get('userId'))))
-    .returning();
 
-  if (!deletedCv) {
+  const [cvToVerify] = await db
+    .select()
+    .from(cvs)
+    .where(and(eq(cvs.id, cvId), eq(cvs.userId, c.get('userId'))));
+
+  if (!cvToVerify) {
     throw new NotFoundError('CV not found');
   }
 
   await db.delete(matches).where(eq(matches.cvId, cvId));
+
+  await db.delete(cvs).where(eq(cvs.id, cvId));
 
   return c.json({ success: true });
 });
