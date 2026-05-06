@@ -8,7 +8,8 @@
     "website:build": "bun --cwd apps/website build",
     "website:dev": "bun --cwd apps/website dev",
     "llm-worker:start": "bun --cwd apps/llm-worker start",
-    "llm-worker:dev": "bun --cwd apps/llm-worker dev"
+    "llm-worker:dev": "bun --cwd apps/llm-worker dev",
+    "scraper:start": "bun --cwd apps/scraper start"
   },
   "workspaces": [
     "apps/*",

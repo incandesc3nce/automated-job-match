@@ -41,6 +41,16 @@ services:
     env_file:
       - ./docker/env/llm-worker.env
 
+  scraper:
+    depends_on:
+      - db
+      - redis
+    build:
+      context: .
+      dockerfile: apps/scraper/Dockerfile
+    env_file:
+      - ./docker/env/scraper.env
+
   website:
     build:
       context: .
