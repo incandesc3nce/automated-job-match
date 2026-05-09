@@ -42,3 +42,4 @@ docker/env/*.env
 
 local-database
 local-redis
+schema.dbml
