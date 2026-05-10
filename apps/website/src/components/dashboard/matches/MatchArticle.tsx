@@ -60,7 +60,9 @@ export const MatchArticle = ({ match }: MatchArticleProps) => {
           <Typography tag="span" className="font-semibold">
             Формат работы:
           </Typography>{' '}
-          {match.jobWorkFormat.map((format) => workFormatMap[format] || format).join(', ')}
+          {match.jobWorkFormat
+            .map((format) => workFormatMap[format] || format)
+            .join(', ')}
         </div>
 
         {match.jobSkills.length > 0 && (
@@ -75,17 +77,17 @@ export const MatchArticle = ({ match }: MatchArticleProps) => {
             </div>
           </div>
         )}
-      </div>
 
-      <div>
-        <Typography tag="span" className="font-semibold">
-          Опубликовано:
-        </Typography>{' '}
-        {new Date(match.jobPostedAt).toLocaleDateString('ru-RU', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        })}
+        <div>
+          <Typography tag="span" className="font-semibold">
+            Опубликовано:
+          </Typography>{' '}
+          {new Date(match.jobPostedAt).toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+          })}
+        </div>
       </div>
 
       <div className="flex items-center justify-between gap-4 mt-4">
