@@ -75,14 +75,14 @@ cvsRouter.get('/:cvId/matches', async (c) => {
       ),
     );
 
+  const matchRowsWithUrls = matchesRows.map((match) => ({
+    ...match,
+    externalUrl: jobSourceLinkMap[match.jobSource!]!(match.jobExternalId!),
+  }));
+
   return c.json({
-    matches: matchesRows
-      .filter((match) => !match.hidden)
-      .map((match) => ({
-        ...match,
-        externalUrl: jobSourceLinkMap[match.jobSource!]!(match.jobExternalId!),
-      })),
-    hiddenMatches: matchesRows.filter((match) => match.hidden),
+    matches: matchRowsWithUrls.filter((match) => !match.hidden),
+    hiddenMatches: matchRowsWithUrls.filter((match) => match.hidden),
     total: total?.count || 0,
   });
 });
