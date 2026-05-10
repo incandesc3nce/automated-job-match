@@ -1,12 +1,12 @@
 import { Hono } from 'hono';
 import { auth } from '@/middlewares/authMiddleware';
-import { db, cvs, eq, and, desc, matches, jobs, count } from '@career-ai/db';
+import { db, cvs, eq, and, desc, matches } from '@career-ai/db';
 import { createCvValidator, updateCvValidator } from './cvs.validator';
 import { BadRequestError, NotFoundError } from '@/utils/APIError';
 import { vectorizeCvQueue } from '@career-ai/queue';
-import { jobSourceLinkMap } from '@/utils/jobSourceLinkMap';
 import { streamSSE } from 'hono/streaming';
 import { redisClient } from '@career-ai/redis';
+import { getMatches, getMatchesCount } from './cvs.queries';
 
 const cvsRouter = new Hono().use('*', auth);
 
@@ -31,59 +31,57 @@ cvsRouter.get('/', async (c) => {
 
 cvsRouter.get('/:cvId/matches', async (c) => {
   const cvId = c.req.param('cvId');
+  const userId = c.get('userId');
   const limit = Number(c.req.query('limit') || 30);
   const offset = Number(c.req.query('offset') || 0);
   if (!cvId) {
     throw new BadRequestError('cvId is required');
   }
 
-  const matchesRows = await db
-    .select({
-      id: matches.id,
-      score: matches.score,
-      reasoning: matches.reasoning,
-      hidden: matches.hidden,
-      createdAt: matches.createdAt,
-      updatedAt: matches.updatedAt,
-      jobTitle: jobs.title,
-      jobSource: jobs.source,
-      jobExternalId: jobs.externalId,
-      jobCompanyName: jobs.companyName,
-      jobLocation: jobs.location,
-      jobDescription: jobs.shortDescription,
-      jobWorkFormat: jobs.workFormat,
-      jobSalaryFrom: jobs.salaryFrom,
-      jobSalaryTo: jobs.salaryTo,
-      jobSalaryExtra: jobs.salaryExtra,
-      jobSkills: jobs.skills,
-      jobPostedAt: jobs.postedAt,
-    })
-    .from(matches)
-    .leftJoin(jobs, eq(matches.jobId, jobs.id))
-    .where(and(eq(matches.cvId, cvId), eq(matches.userId, c.get('userId'))))
-    .orderBy(desc(matches.score), desc(matches.createdAt))
-    .limit(limit)
-    .offset(offset);
+  const matchRows = await getMatches({
+    cvId,
+    userId,
+    limit,
+    offset,
+  });
 
-  const [total] = await db
-    .select({ count: count() })
-    .from(matches)
-    .where(
-      and(
-        and(eq(matches.cvId, cvId), eq(matches.userId, c.get('userId'))),
-        eq(matches.hidden, false),
-      ),
-    );
-
-  const matchRowsWithUrls = matchesRows.map((match) => ({
-    ...match,
-    externalUrl: jobSourceLinkMap[match.jobSource!]!(match.jobExternalId!),
-  }));
+  const total = await getMatchesCount({
+    cvId,
+    userId,
+  });
 
   return c.json({
-    matches: matchRowsWithUrls.filter((match) => !match.hidden),
-    hiddenMatches: matchRowsWithUrls.filter((match) => match.hidden),
-    total: total?.count || 0,
+    matches: matchRows,
+    total: total,
+  });
+});
+
+cvsRouter.get('/:cvId/matches/hidden', async (c) => {
+  const cvId = c.req.param('cvId');
+  const userId = c.get('userId');
+  const limit = Number(c.req.query('limit') || 30);
+  const offset = Number(c.req.query('offset') || 0);
+  if (!cvId) {
+    throw new BadRequestError('cvId is required');
+  }
+
+  const matchRows = await getMatches({
+    cvId,
+    userId,
+    limit,
+    offset,
+    hidden: true,
+  });
+
+  const total = await getMatchesCount({
+    cvId,
+    userId,
+    hidden: true,
+  });
+
+  return c.json({
+    hiddenMatches: matchRows,
+    total: total,
   });
 });
 
