@@ -12,26 +12,33 @@ import { MatchScore } from './MatchScore';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { workFormatMap } from '@/utils/workFormatMap';
+import { MatchHide } from './MatchHide';
 
 type MatchArticleProps = {
   match: Match;
+  hidden?: boolean;
 };
 
-export const MatchArticle = ({ match }: MatchArticleProps) => {
+export const MatchArticle = ({ match, hidden }: MatchArticleProps) => {
   const sourceImage = sourceToImageMap[match.jobSource];
   const [isRevealedDesc, setIsRevealedDesc] = useState(false);
 
   return (
     <article className="flex flex-col border p-4 rounded-md bg-mist-50 dark:bg-mist-900">
       <div className="space-y-2">
-        <Link
-          href={match.externalUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-4 hover:underline">
-          <Typography tag="h3">{match.jobTitle}</Typography>
-          <Image src={sourceImage} alt={match.jobSource} width={32} height={32} />
-        </Link>
+        <div className="flex justify-between gap-2">
+          <Link
+            href={match.externalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-4 hover:underline">
+            <Typography tag="h3">{match.jobTitle}</Typography>
+            <Image src={sourceImage} alt={match.jobSource} width={32} height={32} />
+          </Link>
+          <div>
+            <MatchHide matchId={match.id} action={hidden ? 'unhide' : 'hide'} />
+          </div>
+        </div>
         <div className="flex items-center gap-4">
           <Typography tag="span">
             <Typography tag="span" className="font-semibold">

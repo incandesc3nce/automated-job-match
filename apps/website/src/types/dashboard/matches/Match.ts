@@ -22,6 +22,10 @@ export type Match = {
 
 export type MatchesResponse = {
   matches: Match[];
+  total: number;
+};
+
+export type HiddenMatchesResponse = {
   hiddenMatches: Match[];
   total: number;
 };

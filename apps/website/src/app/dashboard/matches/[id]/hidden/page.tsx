@@ -1,20 +1,27 @@
 import { DashboardHeader } from '@/components/common/DashboardHeader';
 import { MatchesGrid } from '@/components/dashboard/matches/MatchesGrid';
-import { BreadcrumbItem, BreadcrumbLink, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import {
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { SidebarInset } from '@/components/ui/sidebar';
 import { Typography } from '@/components/ui/typography';
-import { MatchesResponse } from '@/types/dashboard/matches/Match';
+import { HiddenMatchesResponse } from '@/types/dashboard/matches/Match';
 import { ServerAPIFetch } from '@/utils/ServerAPIFetch';
 import Link from 'next/link';
 
-export default async function MatchesPage({
+export default async function HiddenMatchesPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const matchesRes = await ServerAPIFetch<MatchesResponse>(`/api/v1/cvs/${id}/matches`);
+  const matchesRes = await ServerAPIFetch<HiddenMatchesResponse>(
+    `/api/v1/cvs/${id}/matches/hidden`,
+  );
 
   return (
     <SidebarInset>
@@ -24,23 +31,28 @@ export default async function MatchesPage({
         </BreadcrumbItem>
         <BreadcrumbSeparator className="hidden md:block" />
         <BreadcrumbItem>
-          <BreadcrumbPage>Подборки</BreadcrumbPage>
+          <BreadcrumbLink href={`/dashboard/matches/${id}`}>Подборки</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage>Скрытые подборки</BreadcrumbPage>
         </BreadcrumbItem>
       </DashboardHeader>
       <div>
         <div className="px-4 my-2">
-          <Typography tag="h2">Подборки вакансий</Typography>
-          <Link href={`/dashboard/matches/${id}/hidden`}>
+          <Typography tag="h2">Скрытые подборки вакансий</Typography>
+          <Link href={`/dashboard/matches/${id}`}>
             <Button variant="outline" size="sm" className="mt-2">
-              Показать скрытые подборки
+              Показать не скрытые подборки
             </Button>
           </Link>
         </div>
         {matchesRes.success && (
           <MatchesGrid
             cvId={id}
-            matches={matchesRes.data.matches}
+            hiddenMatches={matchesRes.data.hiddenMatches}
             total={matchesRes.data.total}
+            showHidden
           />
         )}
       </div>
