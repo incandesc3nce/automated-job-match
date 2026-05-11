@@ -5,7 +5,9 @@
   "private": true,
   "scripts": {
     "dev": "bun run --hot src/main.ts",
-    "start": "bun run src/main.ts"
+    "start": "bun run src/main.ts",
+    "build": "bun build src/main.ts --production --target=bun --outdir=dist",
+    "start:build": "bun run ./dist/main.js"
   },
   "devDependencies": {
     "@types/bun": "latest"

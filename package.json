@@ -4,12 +4,18 @@
   "scripts": {
     "api:start": "bun --cwd apps/api start",
     "api:dev": "bun --cwd apps/api dev",
+    "api:build": "bun --cwd apps/api build",
+    "api:start:build": "bun --cwd apps/api start:build",
     "website:start": "bun --cwd apps/website start",
     "website:build": "bun --cwd apps/website build",
     "website:dev": "bun --cwd apps/website dev",
     "llm-worker:start": "bun --cwd apps/llm-worker start",
     "llm-worker:dev": "bun --cwd apps/llm-worker dev",
-    "scraper:start": "bun --cwd apps/scraper start"
+    "llm-worker:build": "bun --cwd apps/llm-worker build",
+    "llm-worker:start:build": "bun --cwd apps/llm-worker start:build",
+    "scraper:start": "bun --cwd apps/scraper start",
+    "scraper:build": "bun --cwd apps/scraper build",
+    "scraper:start:build": "bun --cwd apps/scraper start:build"
   },
   "workspaces": [
     "apps/*",
